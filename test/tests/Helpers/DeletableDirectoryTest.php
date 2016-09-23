@@ -113,6 +113,7 @@ abstract class DeletableDirectoryTest extends \PHPUnit_Framework_TestCase
     protected function createAbsoluteFile($path, $contents)
     {
         $p = strrpos($path, DIRECTORY_SEPARATOR);
+        $subDir = null;
         if ($p !== false) {
             $subDir = substr($path, 0, $p);
             if (!is_dir($subDir)) {
@@ -122,8 +123,13 @@ abstract class DeletableDirectoryTest extends \PHPUnit_Framework_TestCase
                 }
             }
         }
-        if (file_put_contents($path, $contents) === false) {
-            $this->markTestSkipped("Failed to create file: $path");
+        if (@file_put_contents($path, $contents) === false) {
+            if ($subDir === null) {
+                $msg = "Failed to create file: $path";
+            } else {
+                $msg = "Failed to create file $path (detected directory: $subDir)";
+            }
+            $this->markTestSkipped($msg);
         }
     }
 }
