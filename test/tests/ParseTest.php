@@ -262,7 +262,6 @@ class ParseTest extends Helpers\CasesTest
 
     public function testDoesNotSuggestDifferentParsersForCSS()
     {
-        $error;
         try {
             Parser::parse('a { one:: 1 }', ['from' => 'app.css']);
         } catch (CssSyntaxError $x) {
