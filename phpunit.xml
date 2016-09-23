@@ -1,0 +1,13 @@
+<phpunit
+	bootstrap="./test/bootstrap.php"
+>
+	<testsuites>
+		<testsuite name="fast">
+			<directory>./test/Tests/</directory>
+			<exclude>./test/Tests/IntegrationTest.php</exclude>
+		</testsuite>
+		<testsuite name="slow">
+			<file>./test/Tests/IntegrationTest.php</file>
+		</testsuite>
+	</testsuites>
+</phpunit>
