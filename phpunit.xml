@@ -1,13 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <phpunit
 	bootstrap="./test/bootstrap.php"
+	backupGlobals="false"
+	backupStaticAttributes="false"
+	verbose="true"
+	convertErrorsToExceptions="true"
+	convertNoticesToExceptions="true"
+	convertWarningsToExceptions="true"
 >
 	<testsuites>
 		<testsuite name="fast">
-			<directory>./test/Tests/</directory>
-			<exclude>./test/Tests/IntegrationTest.php</exclude>
+			<directory>test/Tests/</directory>
+			<exclude>test/Tests/IntegrationTest.php</exclude>
 		</testsuite>
 		<testsuite name="slow">
-			<file>./test/Tests/IntegrationTest.php</file>
+			<file>test/Tests/IntegrationTest.php</file>
 		</testsuite>
 	</testsuites>
+	<filter>
+		<whitelist>
+			<directory suffix=".php">src/</directory>
+		</whitelist>
+	</filter>
 </phpunit>
