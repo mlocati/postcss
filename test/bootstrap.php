@@ -9,7 +9,7 @@ if (empty($timezone_identifier)) {
 date_default_timezone_set($timezone_identifier);
 unset($timezone_identifier);
 
-require_once dirname(__DIR__).'/autoloader.php';
+require_once dirname(__DIR__).DIRECTORY_SEPARATOR.'vendor'.DIRECTORY_SEPARATOR.'autoload.php';
 
 spl_autoload_register(
     function ($class) {
