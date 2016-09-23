@@ -1,3 +1,5 @@
+[![Build Status](https://api.travis-ci.org/mlocati/postcss.svg?branch=master)](https://travis-ci.org/mlocati/postcss)
+
 # PostCSS for PHP
 
 Please note that this is an ***unofficial*** port of [PostCSS](http://postcss.org/) to PHP.
