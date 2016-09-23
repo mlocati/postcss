@@ -14,6 +14,8 @@ return Symfony\CS\Config\Config::create()
         '-empty_return',
         // Use the short array syntax
         'short_array_syntax',
+        // Ordering use statements
+        'ordered_use'
     ))
     ->finder(
         Symfony\CS\Finder\DefaultFinder::create()
