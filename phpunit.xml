@@ -10,11 +10,11 @@
 >
 	<testsuites>
 		<testsuite name="fast">
-			<directory>test/Tests/</directory>
+			<directory>test/tests/</directory>
 			<exclude>test/Tests/IntegrationTest.php</exclude>
 		</testsuite>
 		<testsuite name="slow">
-			<file>test/Tests/IntegrationTest.php</file>
+			<file>test/tests/IntegrationTest.php</file>
 		</testsuite>
 	</testsuites>
 	<filter>
