@@ -11,6 +11,12 @@ unset($timezone_identifier);
 
 require_once dirname(__DIR__).DIRECTORY_SEPARATOR.'vendor'.DIRECTORY_SEPARATOR.'autoload.php';
 
+if (!is_dir(__DIR__.DIRECTORY_SEPARATOR.'tmp')) {
+    if (@mkdir(__DIR__.DIRECTORY_SEPARATOR.'tmp', 0777) === false) {
+        fprintf(STDERR, "Failed to create directory ".__DIR__.DIRECTORY_SEPARATOR.'tmp'."\n");
+        exit(1);
+    }
+}
 spl_autoload_register(
     function ($class) {
         if (strpos($class, 'PostCSS\\Tests') !== 0) {
