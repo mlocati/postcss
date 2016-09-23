@@ -11,7 +11,7 @@
 	<testsuites>
 		<testsuite name="fast">
 			<directory>test/tests/</directory>
-			<exclude>test/Tests/IntegrationTest.php</exclude>
+			<exclude>test/tests/IntegrationTest.php</exclude>
 		</testsuite>
 		<testsuite name="slow">
 			<file>test/tests/IntegrationTest.php</file>
