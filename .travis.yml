@@ -20,8 +20,8 @@ script:
   - phpunit
 
 cache:
-  directories:
+  - directories:
     - vendor
 
 notifications:
-  email: false
+  - email: false
