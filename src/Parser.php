@@ -40,9 +40,9 @@ class Parser
      * @param string $css
      * @param array $opts
      *
-     * @return Root
-     *
      * @throws Exception\CssSyntaxError
+     *
+     * @return Root
      */
     public static function parse($css, array $opts = [])
     {
@@ -514,9 +514,9 @@ class Parser
      * @param Input $input
      * @param array $options
      *
-     * @return array
-     *
      * @throws Exception\CssSyntaxError
+     *
+     * @return array
      */
     public static function getTokens(Input $input, array $options = [])
     {
@@ -853,9 +853,9 @@ class Parser
     /**
      * @param array $tokens
      *
-     * @return int|bool
-     *
      * @throws Exception\CssSyntaxError
+     *
+     * @return int|bool
      */
     protected function colon(array $tokens)
     {

@@ -9,6 +9,7 @@ use PostCSS\SourceMap\Generator;
 class LazyResultTest extends \PHPUnit_Framework_TestCase
 {
     protected static $processor = null;
+
     protected static function getProcessor()
     {
         if (static::$processor === null) {

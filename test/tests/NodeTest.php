@@ -80,7 +80,7 @@ class NodeTest extends \PHPUnit_Framework_TestCase
             function ($error) {
             }
         );
-        $this->assertInstanceOf(FulfilledPromise::class,  $result);
+        $this->assertInstanceOf(FulfilledPromise::class, $result);
     }
 
     public function testWarnAcceptsOptions()
@@ -92,7 +92,7 @@ class NodeTest extends \PHPUnit_Framework_TestCase
             'warner'
         );
         $result = (new Processor([$warner]))->process('a{}');
-        $this->assertSame(1, count($result->warnings()),  1);
+        $this->assertSame(1, count($result->warnings()), 1);
         $this->assertSame(1, $result->warnings()[0]->index);
     }
 
@@ -153,6 +153,7 @@ class NodeTest extends \PHPUnit_Framework_TestCase
             (new Rule(['selector' => 'a']))->toString([self::class, 'stringify'])
         );
     }
+
     public function testToStringAcceptsCustomSyntax()
     {
         $this->assertSame(
@@ -203,6 +204,7 @@ class NodeTest extends \PHPUnit_Framework_TestCase
         $clone = clone $decl;
         $this->assertSame(['value'], array_keys(get_object_vars($clone->raws)));
     }
+
     public function testCloneBeforeClonesAndInsertBeforeCurrentNode()
     {
         $rule = new Rule(['selector' => 'a', 'raws' => ['after' => '']]);

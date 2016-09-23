@@ -25,6 +25,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
     }
 
     private static $beforeFix = null;
+
     protected static function getBeforeFix()
     {
         if (self::$beforeFix === null) {
@@ -46,6 +47,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
 
         return self::$beforeFix;
     }
+
 /*
 test.before( function() {
     sinon.stub(console, 'warn');

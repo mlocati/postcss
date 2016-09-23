@@ -13,7 +13,7 @@ require_once dirname(__DIR__).DIRECTORY_SEPARATOR.'vendor'.DIRECTORY_SEPARATOR.'
 
 if (!is_dir(__DIR__.DIRECTORY_SEPARATOR.'tmp')) {
     if (@mkdir(__DIR__.DIRECTORY_SEPARATOR.'tmp', 0777) === false) {
-        fprintf(STDERR, "Failed to create directory ".__DIR__.DIRECTORY_SEPARATOR.'tmp'."\n");
+        fprintf(STDERR, 'Failed to create directory '.__DIR__.DIRECTORY_SEPARATOR.'tmp'."\n");
         exit(1);
     }
 }

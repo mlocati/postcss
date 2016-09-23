@@ -55,6 +55,7 @@ class Result
      * @var PluginInterface|null
      */
     public $lastPlugin = null;
+
     /**
      * @param {Processor} processor - processor used for this transformation
      * @param {Root}      root      - Root node after all transformations

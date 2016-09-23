@@ -138,6 +138,7 @@ class ParseTest extends Helpers\CasesTest
         $root = Parser::parse('a { p: ()) }');
         $this->assertSame('())', $root->first->first->value);
     }
+
     public function testIgnoresSymbolsBeforeDeclaration()
     {
         $root = Parser::parse('a { :one: 1 }');

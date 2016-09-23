@@ -74,7 +74,7 @@ class Stringifier
 
     protected function comment(Node $node)
     {
-        $left = $this->raw($node, 'left',  'commentLeft');
+        $left = $this->raw($node, 'left', 'commentLeft');
         $right = $this->raw($node, 'right', 'commentRight');
         call_user_func($this->builder, '/*'.$left.$node->text.$right.'*/', $node);
     }
