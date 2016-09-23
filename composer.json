@@ -1,7 +1,7 @@
 {
 	"name": "postcss/postcss",
 	"type": "library",
-	"description": "PostCSS processor",
+	"description": "Unifficial native PHP port of the PostCSS processor",
 	"keywords": [
 		"css",
 		"postcss",
