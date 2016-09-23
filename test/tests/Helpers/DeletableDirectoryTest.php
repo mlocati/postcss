@@ -117,7 +117,7 @@ abstract class DeletableDirectoryTest extends \PHPUnit_Framework_TestCase
         if ($p !== false) {
             $subDir = substr($path, 0, $p);
             if (!is_dir($subDir)) {
-                @mkdir($subDir, true, 0777);
+                @mkdir($subDir, 0777, true);
                 if (!is_dir($subDir)) {
                     $this->markTestSkipped("Failed to create directory: $subDir");
                 }
