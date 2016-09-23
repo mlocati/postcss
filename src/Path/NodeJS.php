@@ -1120,6 +1120,7 @@ class NodeJS
             }
         }
     }
+
     /**
      * Bare port of path.posix.normalize.
      *
