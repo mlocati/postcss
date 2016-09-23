@@ -1,5 +1,5 @@
 {
-	"name": "PostCSS",
+	"name": "postcss/postcss",
 	"type": "library",
 	"description": "PostCSS processor",
 	"keywords": [
