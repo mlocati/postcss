@@ -1,35 +1,35 @@
 {
-	"name": "postcss/postcss",
-	"type": "library",
-	"description": "Unifficial native PHP port of the PostCSS processor",
-	"keywords": [
-		"css",
-		"postcss",
-		"less",
-		"lesscss",
-		"sass",
-		"scss"
-	],
-	"homepage": "https://github.com/mlocati/postcss",
-	"license": "MIT",
-	"authors": [
-		{
-			"name": "Michele Locati",
-			"email": "mlocati@gmail.com",
-			"role": "developer"
-		}
-	],
-	"require": {
-		"php": ">=5.5.0",
-		"react/promise": "2.*"
-	},
-	"autoload": {
-		"psr-4": {
-			"PostCSS\\": "src/"
-		}
-	},
-	"support": {
-		"issues": "https://github.com/mlocati/postcss/issues",
-		"source": "https://github.com/mlocati/postcss"
-	}
+    "name": "postcss/postcss",
+    "type": "library",
+    "description": "Unifficial native PHP port of the PostCSS processor",
+    "keywords": [
+        "css",
+        "postcss",
+        "less",
+        "lesscss",
+        "sass",
+        "scss"
+    ],
+    "homepage": "https://github.com/mlocati/postcss",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Michele Locati",
+            "email": "mlocati@gmail.com",
+            "role": "developer"
+        }
+    ],
+    "require": {
+        "php": ">=5.5.0",
+        "react/promise": "2.*"
+    },
+    "autoload": {
+        "psr-4": {
+            "PostCSS\\": "src/"
+        }
+    },
+    "support": {
+        "issues": "https://github.com/mlocati/postcss/issues",
+        "source": "https://github.com/mlocati/postcss"
+    }
 }
