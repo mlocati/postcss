@@ -59,7 +59,7 @@ class NodeJS
             }
 
             $resolvedPath = $path.'/'.$resolvedPath;
-            $resolvedAbsolute = ord($path[0]) === 47/*/*/;
+            $resolvedAbsolute = $path[0] === '/';
         }
         // At this point the path should be resolved to a full absolute path, but
         // handle relative paths to be safe (might happen when process.cwd() fails)
@@ -123,28 +123,28 @@ class NodeJS
             }
 
             $rootEnd = 0;
-            $code = ord($path[0]);
+            $code = $path[0];
             $device = '';
             $isAbsolute = false;
 
             // Try to match a root
             if ($len > 1) {
-                if ($code === 47/*/*/ || $code === 92/*\*/) {
+                if ($code === '/' || $code === '\\') {
                     // Possible UNC root
 
                     // If we started with a separator, we know we at least have an
                     // absolute path of some kind (UNC or otherwise)
                     $isAbsolute = true;
 
-                    $code = ord($path[1]);
-                    if ($code === 47/*/*/ || $code === 92/*\*/) {
+                    $code = $path[1];
+                    if ($code === '/' || $code === '\\') {
                         // Matched double path separator at beginning
                         $j = 2;
                         $last = $j;
                         // Match 1 or more non-path separators
                         for (; $j < $len; ++$j) {
-                            $code = ord($path[$j]);
-                            if ($code === 47/*/*/ || $code === 92/*\*/) {
+                            $code = $path[$j];
+                            if ($code === '/' || $code === '\\') {
                                 break;
                             }
                         }
@@ -154,8 +154,8 @@ class NodeJS
                             $last = $j;
                             // Match 1 or more path separators
                             for (; $j < $len; ++$j) {
-                                $code = ord($path[$j]);
-                                if ($code !== 47/*/*/ && $code !== 92/*\*/) {
+                                $code = $path[$j];
+                                if ($code !== '/' && $code !== '\\') {
                                     break;
                                 }
                             }
@@ -164,8 +164,8 @@ class NodeJS
                                 $last = $j;
                                 // Match 1 or more non-path separators
                                 for (; $j < $len; ++$j) {
-                                    $code = ord($path[$j]);
-                                    if ($code === 47/*/*/ || $code === 92/*\*/) {
+                                    $code = $path[$j];
+                                    if ($code === '/' || $code === '\\') {
                                         break;
                                     }
                                 }
@@ -183,15 +183,15 @@ class NodeJS
                     } else {
                         $rootEnd = 1;
                     }
-                } elseif (($code >= 65/*A*/ && $code <= 90/*Z*/) || ($code >= 97/*a*/ && $code <= 122/*z*/)) {
+                } elseif (($code >= 'A' && $code <= 'Z') || ($code >= 'a' && $code <= 'z')) {
                     // Possible device root
-                    $code = ord($path[1]);
-                    if ($code === 58/*:*/) {
+                    $code = $path[1];
+                    if ($code === ':') {
                         $device = substr($path, 0, 2);
                         $rootEnd = 2;
                         if ($len > 2) {
-                            $code = ord($path[2]);
-                            if ($code === 47/*/*/ || $code === 92/*\*/) {
+                            $code = $path[2];
+                            if ($code === '/' || $code === '\\') {
                                 // Treat separator following drive name as an absolute path
                                 // indicator
                                 $isAbsolute = true;
@@ -200,7 +200,7 @@ class NodeJS
                         }
                     }
                 }
-            } elseif ($code === 47/*/*/ || $code === 92/*\*/) {
+            } elseif ($code === '/' || $code === '\\') {
                 // `path` contains just a path separator
                 $rootEnd = 1;
                 $isAbsolute = true;
@@ -254,23 +254,23 @@ class NodeJS
         $pathLength = strlen($path);
         for ($i = 0; $i <= $pathLength; ++$i) {
             if ($i < $pathLength) {
-                $code = ord($path[$i]);
-            } elseif ($code === 47/*/*/ || $code === 92/*\*/) {
+                $code = $path[$i];
+            } elseif ($code === '/' || $code === '\\') {
                 break;
             } else {
-                $code = 47/*/*/;
+                $code = '/';
             }
-            if ($code === 47/*/*/ || $code === 92/*\*/) {
+            if ($code === '/' || $code === '\\') {
                 if ($lastSlash === $i - 1 || $dots === 1) {
                     // NOOP
                 } elseif ($lastSlash !== $i - 1 && $dots === 2) {
                     $resLength = strlen($res);
-                    if ($resLength < 2 || ord($res[$resLength - 1]) !== 46/*.*/ || ord($res[$resLength - 2]) !== 46/*.*/) {
+                    if ($resLength < 2 || $res[$resLength - 1] !== '.' || $res[$resLength - 2] !== '.') {
                         if ($resLength > 2) {
                             $start = $resLength - 1;
                             $j = $start;
                             for (; $j >= 0; --$j) {
-                                if (ord($res[$j]) === 92/*\*/) {
+                                if ($res[$j] === '\\') {
                                     break;
                                 }
                             }
@@ -307,7 +307,7 @@ class NodeJS
                 }
                 $lastSlash = $i;
                 $dots = 0;
-            } elseif ($code === 46/*.*/ && $dots !== -1) {
+            } elseif ($code === '.' && $dots !== -1) {
                 ++$dots;
             } else {
                 $dots = -1;
@@ -335,23 +335,23 @@ class NodeJS
         $pathLength = strlen($path);
         for ($i = 0; $i <= $pathLength; ++$i) {
             if ($i < $pathLength) {
-                $code = ord($path[$i]);
-            } elseif ($code === 47/*/*/) {
+                $code = $path[$i];
+            } elseif ($code === '/') {
                 break;
             } else {
-                $code = 47/*/*/;
+                $code = '/';
             }
-            if ($code === 47/*/*/) {
+            if ($code === '/') {
                 if ($lastSlash === $i - 1 || $dots === 1) {
                     // NOOP
                 } elseif ($lastSlash !== $i - 1 && $dots === 2) {
                     $resLength = strlen($res);
-                    if ($resLength < 2 || ord($res[$resLength - 1]) !== 46/*.*/ || ord($res[$resLength - 2]) !== 46/*.*/) {
+                    if ($resLength < 2 || $res[$resLength - 1] !== '.' || $res[$resLength - 2] !== '.') {
                         if ($resLength > 2) {
                             $start = $resLength - 1;
                             $j = $start;
                             for (; $j >= 0; --$j) {
-                                if (ord($res[$j]) === 47/*/*/) {
+                                if ($res[$j] === '/') {
                                     break;
                                 }
                             }
@@ -388,7 +388,7 @@ class NodeJS
                 }
                 $lastSlash = $i;
                 $dots = 0;
-            } elseif ($code === 46/*.*/ && $dots !== -1) {
+            } elseif ($code === '.' && $dots !== -1) {
                 ++$dots;
             } else {
                 $dots = -1;
@@ -455,14 +455,14 @@ class NodeJS
         $fromStart = 0;
         $fl = strlen($from);
         for (; $fromStart < $fl; ++$fromStart) {
-            if (ord($from[$fromStart]) !== 92/*\*/) {
+            if ($from[$fromStart] !== '\\') {
                 break;
             }
         }
         // Trim trailing backslashes (applicable $to UNC paths only)
         $fromEnd = $fl;
         for (; $fromEnd - 1 > $fromStart; --$fromEnd) {
-            if (ord($from[$fromEnd - 1]) !== 92/*\*/) {
+            if ($from[$fromEnd - 1] !== '\\') {
                 break;
             }
         }
@@ -471,14 +471,14 @@ class NodeJS
         $tl = strlen($to);
         $toStart = 0;
         for (; $toStart < $tl; ++$toStart) {
-            if (ord($to[$toStart]) !== 92/*\*/) {
+            if ($to[$toStart] !== '\\') {
                 break;
             }
         }
         // Trim trailing backslashes (applicable $to UNC paths only)
         $toEnd = $tl;
         for (; $toEnd - 1 > $toStart; --$toEnd) {
-            if (ord($to[$toEnd - 1]) !== 92/*\*/) {
+            if ($to[$toEnd - 1] !== '\\') {
                 break;
             }
         }
@@ -490,7 +490,7 @@ class NodeJS
         for (; $i <= $length; ++$i) {
             if ($i === $length) {
                 if ($toLen > $length) {
-                    if (ord($to[$toStart + $i]) === 92/*\*/) {
+                    if ($to[$toStart + $i] === '\\') {
                         // We get here if `$from` is the exact base path for `$to`.
                         // For example: $from='C:\\foo\\bar'; $to='C:\\foo\\bar\\baz'
                         return substr($toOrig, $toStart + $i + 1);
@@ -501,7 +501,7 @@ class NodeJS
                     }
                 }
                 if ($fromLen > $length) {
-                    if (ord($from[$fromStart + $i]) === 92/*\*/) {
+                    if ($from[$fromStart + $i] === '\\') {
                         // We get here if `$to` is the exact base path for `$from`.
                         // For example: $from='C:\\foo\\bar'; $to='C:\\foo'
                         $lastCommonSep = $i;
@@ -513,11 +513,11 @@ class NodeJS
                 }
                 break;
             }
-            $fromCode = ord($from[$fromStart + $i]);
-            $toCode = ord($to[$toStart + $i]);
+            $fromCode = $from[$fromStart + $i];
+            $toCode = $to[$toStart + $i];
             if ($fromCode !== $toCode) {
                 break;
-            } elseif ($fromCode === 92/*\*/) {
+            } elseif ($fromCode === '\\') {
                 $lastCommonSep = $i;
             }
         }
@@ -537,7 +537,7 @@ class NodeJS
         }
         // Generate the relative path based on the path difference between `$to` and `$from`
         for ($i = $fromStart + $lastCommonSep + 1; $i <= $fromEnd; ++$i) {
-            if ($i === $fromEnd || ord($from[$i]) === 92/*\*/) {
+            if ($i === $fromEnd || $from[$i] === '\\') {
                 if ($out === '') {
                     $out = '..';
                 } else {
@@ -551,7 +551,7 @@ class NodeJS
             return $out.substr($toOrig, $toStart + $lastCommonSep, $toEnd - $toStart + $lastCommonSep);
         } else {
             $toStart .= $lastCommonSep;
-            if (ord($toOrig[$toStart]) === 92/*\*/) {
+            if ($toOrig[$toStart] === '\\') {
                 ++$toStart;
             }
 
@@ -589,7 +589,7 @@ class NodeJS
         $fromStart = 1;
         $fl = strlen($from);
         for (; $fromStart < $fl; ++$fromStart) {
-            if (ord($from[$fromStart]) !== 47/*/*/) {
+            if ($from[$fromStart] !== '/') {
                 break;
             }
         }
@@ -599,7 +599,7 @@ class NodeJS
         $toStart = 1;
         $tl = strlen($to);
         for (; $toStart < $tl; ++$toStart) {
-            if (ord($to[$toStart]) !== 47/*/*/) {
+            if ($to[$toStart] !== '/') {
                 break;
             }
         }
@@ -612,7 +612,7 @@ class NodeJS
         for (; $i <= $length; ++$i) {
             if ($i === $length) {
                 if ($toLen > $length) {
-                    if (ord($to[$toStart + $i]) === 47/*/*/) {
+                    if ($to[$toStart + $i] === '/') {
                         // We get here if `$from` is the exact base path for `$to`.
                         // For example: $from='/foo/bar'; $to='/foo/bar/baz'
                         return substr($to, $toStart + $i + 1);
@@ -622,7 +622,7 @@ class NodeJS
                         return substr($to, $toStart + $i);
                     }
                 } elseif ($fromLen > $length) {
-                    if (ord($from[$fromStart + $i]) === 47/*/*/) {
+                    if ($from[$fromStart + $i] === '/') {
                         // We get here if `$to` is the exact base path for `$from`.
                         // For example: $from='/foo/bar/baz'; $to='/foo/bar'
                         $lastCommonSep = $i;
@@ -634,18 +634,18 @@ class NodeJS
                 }
                 break;
             }
-            $fromCode = ord($from[$fromStart + $i]);
-            $toCode = ord($to[$toStart + $i]);
+            $fromCode = $from[$fromStart + $i];
+            $toCode = $to[$toStart + $i];
             if ($fromCode !== $toCode) {
                 break;
-            } elseif ($fromCode === 47/*/*/) {
+            } elseif ($fromCode === '/') {
                 $lastCommonSep = $i;
             }
         }
         $out = '';
         // Generate the relative path based on the path difference between `$to` and `$from`
         for ($i = $fromStart + $lastCommonSep + 1; $i <= $fromEnd; ++$i) {
-            if ($i === $fromEnd || ord($from[$i]) === 47/*/*/) {
+            if ($i === $fromEnd || $from[$i] === '/') {
                 if ($out === '') {
                     $out = '..';
                 } else {
@@ -658,7 +658,7 @@ class NodeJS
             return $out.substr($to, $toStart + $lastCommonSep);
         } else {
             $toStart += $lastCommonSep;
-            if (ord($to[$toStart]) === 47/*/*/) {
+            if ($to[$toStart] === '/') {
                 ++$toStart;
             }
 
@@ -706,22 +706,22 @@ class NodeJS
         $end = -1;
         $matchedSlash = true;
         $offset = 0;
-        $code = ord($path[0]);
+        $code = $path[0];
 
         // Try to match a root
         if ($len > 1) {
-            if ($code === 47/*/*/ || $code === 92/*\*/) {
+            if ($code === '/' || $code === '\\') {
                 // Possible UNC root
                 $rootEnd = $offset = 1;
-                $code = ord($path[1]);
-                if ($code === 47/*/*/ || $code === 92/*\*/) {
+                $code = $path[1];
+                if ($code === '/' || $code === '\\') {
                     // Matched double path separator at beginning
                     $j = 2;
                     $last = $j;
                     // Match 1 or more non-path separators
                     for (; $j < $len; ++$j) {
-                        $code = ord($path[$j]);
-                        if ($code === 47/*/*/ || $code === 92/*\*/) {
+                        $code = $path[$j];
+                        if ($code === '/' || $code === '\\') {
                             break;
                         }
                     }
@@ -730,8 +730,8 @@ class NodeJS
                         $last = $j;
                         // Match 1 or more path separators
                         for (; $j < $len; ++$j) {
-                            $code = ord($path[$j]);
-                            if ($code !== 47/*/*/ && $code !== 92/*\*/) {
+                            $code = $path[$j];
+                            if ($code !== '/' && $code !== '\\') {
                                 break;
                             }
                         }
@@ -740,8 +740,8 @@ class NodeJS
                             $last = $j;
                             // Match 1 or more non-path separators
                             for (; $j < $len; ++$j) {
-                                $code = ord($path[$j]);
-                                if ($code === 47/*/*/ || $code === 92/*\*/) {
+                                $code = $path[$j];
+                                if ($code === '/' || $code === '\\') {
                                     break;
                                 }
                             }
@@ -758,26 +758,26 @@ class NodeJS
                         }
                     }
                 }
-            } elseif (($code >= 65/*A*/ && $code <= 90/*Z*/) || ($code >= 97/*a*/ && $code <= 122/*z*/)) {
+            } elseif (($code >= 'A' && $code <= 'Z') || ($code >= 'a' && $code <= 'z')) {
                 // Possible device root
-                $code = ord($path[1]);
-                if (ord($path[1]) === 58/*:*/) {
+                $code = $path[1];
+                if ($path[1] === ':') {
                     $rootEnd = $offset = 2;
                     if ($len > 2) {
-                        $code = ord($path[2]);
-                        if ($code === 47/*/*/ || $code === 92/*\*/) {
+                        $code = $path[2];
+                        if ($code === '/' || $code === '\\') {
                             $rootEnd = $offset = 3;
                         }
                     }
                 }
             }
-        } elseif ($code === 47/*/*/ || $code === 92/*\*/) {
+        } elseif ($code === '/' || $code === '\\') {
             return $path[0];
         }
 
         for ($i = $len - 1; $i >= $offset; --$i) {
-            $code = ord($path[$i]);
-            if ($code === 47/*/*/ || $code === 92/*\*/) {
+            $code = $path[$i];
+            if ($code === '/' || $code === '\\') {
                 if (!$matchedSlash) {
                     $end = $i;
                     break;
@@ -817,13 +817,13 @@ class NodeJS
         if ($len === 0) {
             return '.';
         }
-        $code = ord($path[0]);
-        $hasRoot = ($code === 47/*/*/);
+        $code = $path[0];
+        $hasRoot = ($code === '/');
         $end = -1;
         $matchedSlash = true;
         for ($i = $len - 1; $i >= 1; --$i) {
-            $code = ord($path[$i]);
-            if ($code === 47/*/*/) {
+            $code = $path[$i];
+            if ($code === '/') {
                 if (!$matchedSlash) {
                     $end = $i;
                     break;
@@ -894,17 +894,17 @@ class NodeJS
         // var firstPart = paths[0];
         $needsReplace = true;
         $slashCount = 0;
-        $code = ord($firstPart[0]);
-        if ($code === 47/*/*/ || $code === 92/*\*/) {
+        $code = $firstPart[0];
+        if ($code === '/' || $code === '\\') {
             ++$slashCount;
             $firstLen = strlen($firstPart);
             if ($firstLen > 1) {
-                $code = ord($firstPart[1]);
-                if ($code === 47/*/*/ || $code === 92/*\*/) {
+                $code = $firstPart[1];
+                if ($code === '/' || $code === '\\') {
                     ++$slashCount;
                     if ($firstLen > 2) {
-                        $code = ord($firstPart[2]);
-                        if ($code === 47/*/*/ || $code === 92/*\*/) {
+                        $code = $firstPart[2];
+                        if ($code === '/' || $code === '\\') {
                             ++$slashCount;
                         } else {
                             // We matched a UNC path in the first part
@@ -917,8 +917,8 @@ class NodeJS
         if ($needsReplace) {
             // Find any more consecutive slashes we need to replace
             for (; $slashCount < strlen($joined); ++$slashCount) {
-                $code = ord($joined[$slashCount]);
-                if ($code !== 47/*/*/ && $code !== 92/*\*/) {
+                $code = $joined[$slashCount];
+                if ($code !== '/' && $code !== '\\') {
                     break;
                 }
             }
@@ -999,26 +999,26 @@ class NodeJS
             return '.';
         }
         $rootEnd = 0;
-        $code = ord($path[0]);
+        $code = $path[0];
         $device = null;
         $isAbsolute = false;
         // Try to match a root
         if ($len > 1) {
-            if ($code === 47/*/*/ || $code === 92/*\*/) {
+            if ($code === '/' || $code === '\\') {
                 // Possible UNC root
 
                 // If we started with a separator, we know we at least have an absolute path of some kind (UNC or otherwise)
                 $isAbsolute = true;
 
-                $code = ord($path[1]);
-                if ($code === 47/*/*/ || $code === 92/*\*/) {
+                $code = $path[1];
+                if ($code === '/' || $code === '\\') {
                     // Matched double path separator at beginning
                     $j = 2;
                     $last = $j;
                     // Match 1 or more non-path separators
                     for (; $j < $len; ++$j) {
-                        $code = ord($path[$j]);
-                        if ($code === 47/*/*/ || $code === 92/*\*/) {
+                        $code = $path[$j];
+                        if ($code === '/' || $code === '\\') {
                             break;
                         }
                     }
@@ -1028,8 +1028,8 @@ class NodeJS
                         $last = $j;
                         // Match 1 or more path separators
                         for (; $j < $len; ++$j) {
-                            $code = ord($path[$j]);
-                            if ($code !== 47/*/*/ && $code !== 92/*\*/) {
+                            $code = $path[$j];
+                            if ($code !== '/' && $code !== '\\') {
                                 break;
                             }
                         }
@@ -1038,8 +1038,8 @@ class NodeJS
                             $last = $j;
                             // Match 1 or more non-path separators
                             for (; $j < $len; ++$j) {
-                                $code = ord($path[$j]);
-                                if ($code === 47/*/*/ || $code === 92/*\*/) {
+                                $code = $path[$j];
+                                if ($code === '/' || $code === '\\') {
                                     break;
                                 }
                             }
@@ -1059,16 +1059,16 @@ class NodeJS
                 } else {
                     $rootEnd = 1;
                 }
-            } elseif (($code >= 65/*A*/ && $code <= 90/*Z*/) || ($code >= 97/*a*/ && $code <= 122/*z*/)) {
+            } elseif (($code >= 'A' && $code <= 'Z') || ($code >= 'a' && $code <= 'z')) {
                 // Possible device root
 
-                $code = ord($path[1]);
-                if (ord($path[1]) === 58/*:*/) {
+                $code = $path[1];
+                if ($path[1] === ':') {
                     $device = substr($path, 0, 2);
                     $rootEnd = 2;
                     if ($len > 2) {
-                        $code = ord($path[2]);
-                        if ($code === 47/*/*/ || $code === 92/*\*/) {
+                        $code = $path[2];
+                        if ($code === '/' || $code === '\\') {
                             // Treat separator following drive name as an absolute path indicator
                             $isAbsolute = true;
                             $rootEnd = 3;
@@ -1076,13 +1076,13 @@ class NodeJS
                     }
                 }
             }
-        } elseif ($code === 47/*/*/ || $code === 92/*\*/) {
+        } elseif ($code === '/' || $code === '\\') {
             // `path` contains just a path separator, exit early to avoid unnecessary work
             return '\\';
         }
 
-        $code = ord($path[$len - 1]);
-        $trailingSeparator = ($code === 47/*/*/ || $code === 92/*\*/);
+        $code = $path[$len - 1];
+        $trailingSeparator = ($code === '/' || $code === '\\');
         if ($rootEnd < $len) {
             $tail = static::normalizeStringWin32(substr($path, $rootEnd), !$isAbsolute);
         } else {
@@ -1138,8 +1138,8 @@ class NodeJS
         if ($path === '') {
             return '.';
         }
-        $isAbsolute = ord($path[0]) === 47/*/*/;
-        $trailingSeparator = ord($path[strlen($path) - 1]) === 47/*/*/;
+        $isAbsolute = $path[0] === '/';
+        $trailingSeparator = $path[strlen($path) - 1] === '/';
 
         // Normalize the path
         $path = static::normalizeStringPosix($path, !$isAbsolute);
