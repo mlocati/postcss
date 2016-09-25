@@ -12,26 +12,6 @@ namespace PostCSS;
  */
 class Parser
 {
-    const SINGLE_QUOTE = 0x27; //"'"
-    const DOUBLE_QUOTE = 0x22; //'"'
-    const BACKSLASH = 0x5c; //"\\"
-    const SLASH = 0x2f; //"/"
-    const NEWLINE = 0x0a; //"\n"
-    const SPACE = 0x20; //" "
-    const FEED = 0x0c; //"\f"
-    const TAB = 0x09; //"\t"
-    const CR = 0x0d; //"\r"
-    const OPEN_SQUARE = 0x5b; //"["
-    const CLOSE_SQUARE = 0x5d; //"]"
-    const OPEN_PARENTHESES = 0x28; //"("
-    const CLOSE_PARENTHESES = 0x29; //")"
-    const OPEN_CURLY = 0x7b; //"{"
-    const CLOSE_CURLY = 0x7d; //"}"
-    const SEMICOLON = 0x3b; //";"
-    const ASTERICK = 0x2a; //"*"
-    const COLON = 0x3a; //":"
-    const AT = 0x40; //"@"
-
     const RE_AT_END = '/[ \\n\\t\\r\\f\\{\\(\\)\'"\\\\;\\/\\[\\]#]/';
     const RE_WORD_END = '/[ \\n\\t\\r\\f\\(\\)\\{\\}:;@!\'"\\\\\\]\\[#]|\\/(?=\\*)/';
     const RE_BAD_BRACKET = '%.[\\\/\("\'\n]%';
@@ -535,60 +515,60 @@ class Parser
         };
 
         while ($pos < $length) {
-            $code = ord($css[$pos]);
+            $code = $css[$pos];
 
-            if ($code === static::NEWLINE || $code === static::FEED || $code === static::CR && ($pos === $length - 1 || ord($css[$pos + 1]) !== static::NEWLINE)) {
+            if ($code === "\n" || $code === "\f" || $code === "\r" && ($pos === $length - 1 || $css[$pos + 1] !== "\n")) {
                 $offset = $pos;
                 $line += 1;
             }
 
             switch ($code) {
-                case static::NEWLINE:
-                case static::SPACE:
-                case static::TAB:
-                case static::CR:
-                case static::FEED:
+                case "\n":
+                case ' ':
+                case "\t":
+                case "\r":
+                case "\f":
                     $next = $pos;
                     do {
                         $next += 1;
-                        $code = ($next === $length) ? null : ord($css[$next]);
-                        if ($code === static::NEWLINE) {
+                        $code = ($next === $length) ? null : $css[$next];
+                        if ($code === "\n") {
                             $offset = $next;
                             $line += 1;
                         }
-                    } while ($code === static::SPACE || $code === static::NEWLINE || $code === static::TAB || $code === static::CR || $code === static::FEED);
+                    } while ($code === ' ' || $code === "\n" || $code === "\t" || $code === "\r" || $code === "\f");
                     $tokens[] = ['space', substr($css, $pos, $next - $pos)];
                     $pos = $next - 1;
                     break;
 
-                case static::OPEN_SQUARE:
+                case '[':
                     $tokens[] = ['[', '[', $line, $pos - $offset];
                     break;
 
-                case static::CLOSE_SQUARE:
+                case ']':
                     $tokens[] = [']', ']', $line, $pos - $offset];
                     break;
 
-                case static::OPEN_CURLY:
+                case '{':
                     $tokens[] = ['{', '{', $line, $pos - $offset];
                     break;
 
-                case static::CLOSE_CURLY:
+                case '}':
                     $tokens[] = ['}', '}', $line, $pos - $offset];
                     break;
 
-                case static::COLON:
+                case ':':
                     $tokens[] = [':', ':', $line, $pos - $offset];
                     break;
 
-                case static::SEMICOLON:
+                case ';':
                     $tokens[] = [';', ';', $line, $pos - $offset];
                     break;
 
-                case static::OPEN_PARENTHESES:
+                case '(':
                     $prev = empty($tokens) ? '' : $tokens[count($tokens) - 1][1];
-                    $n = ($pos < $length - 1) ? ord($css[$pos + 1]) : null;
-                    if ($prev === 'url' && $n !== static::SINGLE_QUOTE && $n !== static::DOUBLE_QUOTE && $n !== static::SPACE && $n !== static::NEWLINE && $n !== static::TAB && $n !== static::FEED && $n !== static::CR) {
+                    $n = ($pos < $length - 1) ? $css[$pos + 1] : null;
+                    if ($prev === 'url' && $n !== "'" && $n !== '"' && $n !== ' ' && $n !== "\n" && $n !== "\t" && $n !== "\f" && $n !== "\r") {
                         $next = $pos;
                         do {
                             $escaped = false;
@@ -602,7 +582,7 @@ class Parser
                                 }
                             }
                             $escapePos = $next;
-                            while (ord($css[$escapePos - 1]) === static::BACKSLASH) {
+                            while ($css[$escapePos - 1] === '\\') {
                                 $escapePos -= 1;
                                 $escaped = !$escaped;
                             }
@@ -623,13 +603,13 @@ class Parser
                     }
                     break;
 
-                    case static::CLOSE_PARENTHESES:
+                    case ')':
                         $tokens[] = [')', ')', $line, $pos - $offset];
                         break;
 
-                    case static::SINGLE_QUOTE:
-                    case static::DOUBLE_QUOTE:
-                        $quote = $code === static::SINGLE_QUOTE ? '\'' : '"';
+                    case "'":
+                    case '"':
+                        $quote = $code === "'" ? '\'' : '"';
                         $next = $pos;
                         do {
                             $escaped = false;
@@ -643,7 +623,7 @@ class Parser
                                 }
                             }
                             $escapePos = $next;
-                            while (ord($css[$escapePos - 1]) === static::BACKSLASH) {
+                            while ($css[$escapePos - 1] === '\\') {
                                 $escapePos -= 1;
                                 $escaped = !$escaped;
                             }
@@ -668,7 +648,7 @@ class Parser
                         $pos = $next;
                         break;
 
-                    case static::AT:
+                    case '@':
                         if (!preg_match(static::RE_AT_END, $css, $rxMatches, 0, $pos + 1)) {
                             $next = $length - 1;
                         } else {
@@ -678,15 +658,15 @@ class Parser
                         $pos = $next;
                         break;
 
-                    case static::BACKSLASH:
+                    case '\\':
                         $next = $pos;
                         $escape = true;
-                        while (($next < ($length - 1)) && ord($css[$next + 1]) === static::BACKSLASH) {
+                        while (($next < ($length - 1)) && $css[$next + 1] === '\\') {
                             $next += 1;
                             $escape = !$escape;
                         }
-                        $code = ($next < ($length - 1)) ? ord($css[$next + 1]) : null;
-                        if ($escape && ($code !== static::SLASH && $code !== static::SPACE && $code !== static::NEWLINE && $code !== static::TAB && $code !== static::CR && $code !== static::FEED)) {
+                        $code = ($next < ($length - 1)) ? $css[$next + 1] : null;
+                        if ($escape && ($code !== '/' && $code !== ' ' && $code !== "\n" && $code !== "\t" && $code !== "\r" && $code !== "\f")) {
                             $next += 1;
                         }
                         $tokens[] = ['word', substr($css, $pos, $next + 1 - $pos), $line, $pos - $offset, $line, $next - $offset];
@@ -694,7 +674,7 @@ class Parser
                         break;
 
                     default:
-                        if ($code === static::SLASH && $pos < ($length - 1) && ord($css[$pos + 1]) === static::ASTERICK) {
+                        if ($code === '/' && $pos < ($length - 1) && $css[$pos + 1] === '*') {
                             $next = strpos($css, '*/', $pos + 2);
                             if ($next === false) {
                                 if ($ignore) {
