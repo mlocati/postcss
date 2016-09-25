@@ -237,7 +237,7 @@ test.after( function() {
 
         $assertions = 0;
         $me = $this;
-        $result = (new Processor([$a, $b]))
+        (new Processor([$a, $b]))
             ->process('')
             ->then(
                 function () use ($me, &$calls, &$assertions) {
@@ -246,7 +246,8 @@ test.after( function() {
                 },
                 function () {
                 }
-            );
+            )
+            ->done();
         $this->assertSame(1, $assertions);
     }
 
@@ -311,14 +312,16 @@ test.after( function() {
         $me = $this;
         $assertions = 0;
 
-        return (new Processor())->process('a {}')->then(
-            function ($result) use ($me, &$assertions) {
-                $me->assertSame('a {}', $result->css);
-                ++$assertions;
-            },
-            function () {
-            }
-        );
+        (new Processor())->process('a {}')
+            ->then(
+                function ($result) use ($me, &$assertions) {
+                    $me->assertSame('a {}', $result->css);
+                    ++$assertions;
+                },
+                function () {
+                }
+            )
+            ->done();
         $this->assertSame(1, $assertions);
     }
 
@@ -336,14 +339,16 @@ test.after( function() {
         });
 
         $processor = new Processor([$plugin1, $plugin2]);
-        $processor->process('a{}')->then(
-            function ($result) use ($me, &$assertions, $plugin2) {
-                $me->assertSame($result->lastPlugin, $plugin2);
-                ++$assertions;
-            },
-            function () {
-            }
-        );
+        $processor->process('a{}')
+            ->then(
+                function ($result) use ($me, &$assertions, $plugin2) {
+                    $me->assertSame($result->lastPlugin, $plugin2);
+                    ++$assertions;
+                },
+                function () {
+                }
+            )
+            ->done();
         $this->assertSame(3, $assertions);
     }
 
@@ -355,14 +360,16 @@ test.after( function() {
         $processor->process(
             'a{}',
             ['parser' => [self::class, 'prs']]
-        )->then(
-            function ($result) use ($me, &$assertions) {
-                $me->assertSame('ok', $result->css);
-                ++$assertions;
-            },
-            function () {
-            }
-        );
+        )
+            ->then(
+                function ($result) use ($me, &$assertions) {
+                    $me->assertSame('ok', $result->css);
+                    ++$assertions;
+                },
+                function () {
+                }
+            )
+            ->done();
         $this->assertSame(1, $assertions);
     }
 
@@ -374,14 +381,16 @@ test.after( function() {
         $syntax = ['parse' => [self::class, 'prs'], 'stringify' => [self::class, 'str']];
         $processor->process(
             'a{}', ['parser' => $syntax]
-        )->then(
-            function ($result) use ($me, &$assertions) {
-                $me->assertSame('ok', $result->css);
-                ++$assertions;
-            },
-            function () {
-            }
-        );
+        )
+            ->then(
+                function ($result) use ($me, &$assertions) {
+                    $me->assertSame('ok', $result->css);
+                    ++$assertions;
+                },
+                function () {
+                }
+            )
+            ->done();
         $this->assertSame(1, $assertions);
     }
 
@@ -393,14 +402,16 @@ test.after( function() {
         $processor->process(
             'a{}',
             ['stringifier' => [self::class, 'str']]
-        )->then(
-            function ($result) use ($me, &$assertions) {
-                $me->assertSame('!', $result->css);
-                ++$assertions;
-            },
-            function () {
-            }
-        );
+        )
+            ->then(
+                function ($result) use ($me, &$assertions) {
+                    $me->assertSame('!', $result->css);
+                    ++$assertions;
+                },
+                function () {
+                }
+            )
+            ->done();
         $this->assertSame(1, $assertions);
     }
 
@@ -413,14 +424,16 @@ test.after( function() {
         $processor->process(
             '',
             ['stringifier' => $syntax]
-        )->then(
-            function ($result) use ($me, &$assertions) {
-                $me->assertSame('!', $result->css);
-                ++$assertions;
-            },
-            function () {
-            }
-        );
+        )
+            ->then(
+                function ($result) use ($me, &$assertions) {
+                    $me->assertSame('!', $result->css);
+                    ++$assertions;
+                },
+                function () {
+                }
+            )
+            ->done();
         $this->assertSame(1, $assertions);
     }
 
@@ -430,14 +443,15 @@ test.after( function() {
         $assertions = 0;
         $processor = new Processor([]);
         $processor->process('a{}', ['map' => true, 'stringifier' => [self::class, 'str']])
-        ->then(
-            function ($result) use ($me, &$assertions) {
-                $me->assertRegExp('/!\n\/\*# sourceMap/', $result->css);
-                ++$assertions;
-            },
-            function () {
-            }
-        );
+            ->then(
+                function ($result) use ($me, &$assertions) {
+                    $me->assertRegExp('/!\n\/\*# sourceMap/', $result->css);
+                    ++$assertions;
+                },
+                function () {
+                }
+            )
+            ->done();
         $this->assertSame(1, $assertions);
     }
 
@@ -448,17 +462,19 @@ test.after( function() {
         $processor = new Processor([]);
         $syntax = ['parse' => [self::class, 'prs'], 'stringify' => [self::class, 'str']];
 
-        return $processor->process(
+        $processor->process(
             'a{}',
             ['syntax' => $syntax]
-        )->then(
-            function ($result) use ($me, &$assertions) {
-                $me->assertSame('ok!', $result->css);
-                ++$assertions;
-            },
-            function () {
-            }
-        );
+        )
+            ->then(
+                function ($result) use ($me, &$assertions) {
+                    $me->assertSame('ok!', $result->css);
+                    ++$assertions;
+                },
+                function () {
+                }
+            )
+            ->done();
         $this->assertSame(1, $assertions);
     }
 }

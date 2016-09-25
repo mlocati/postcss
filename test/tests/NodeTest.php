@@ -13,7 +13,6 @@ use PostCSS\Path\NodeJS as Path;
 use PostCSS\Parser;
 use PostCSS\Processor;
 use PostCSS\Warning;
-use React\Promise\FulfilledPromise;
 
 class NodeTest extends \PHPUnit_Framework_TestCase
 {
@@ -70,17 +69,18 @@ class NodeTest extends \PHPUnit_Framework_TestCase
         );
 
         $me = $this;
-        $result = (new Processor([$warner]))->process('a{}')->then(
-            function ($result) use ($me, &$warning) {
-                $me->assertInstanceOf(Warning::class, $warning);
-                $me->assertSame('FIRST!', $warning->text);
-                $me->assertSame('warner', $warning->plugin);
-                $me->assertSame([$warning], $result->warnings());
-            },
-            function ($error) {
-            }
-        );
-        $this->assertInstanceOf(FulfilledPromise::class, $result);
+        (new Processor([$warner]))->process('a{}')
+            ->then(
+                function ($result) use ($me, &$warning) {
+                    $me->assertInstanceOf(Warning::class, $warning);
+                    $me->assertSame('FIRST!', $warning->text);
+                    $me->assertSame('warner', $warning->plugin);
+                    $me->assertSame([$warning], $result->warnings());
+                },
+                function ($error) {
+                }
+            )
+            ->done();
     }
 
     public function testWarnAcceptsOptions()

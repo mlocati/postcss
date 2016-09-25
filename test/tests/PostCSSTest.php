@@ -4,7 +4,6 @@ namespace PostCSS\Tests;
 
 use PostCSS\Processor;
 use PostCSS\Plugin\ClosurePlugin;
-use React\Promise\FulfilledPromise;
 use PostCSS\Parser;
 use PostCSS\Root;
 use PostCSS\Comment;
@@ -150,14 +149,15 @@ class PostCSSTest extends \PHPUnit_Framework_TestCase
         $this->assertSame('a{value:baz}', $result2->css);
 
         $me = $this;
-        $cr = $plugin->process('a{value:foo}', [])->then(
-            function ($result) use ($me) {
-                $me->assertSame('a{value:bar}', $result->css);
-            },
-            function () {
-            }
-        );
-        $this->assertInstanceOf(FulfilledPromise::class, $cr);
+        $plugin->process('a{value:foo}', [])
+            ->then(
+                function ($result) use ($me) {
+                    $me->assertSame('a{value:bar}', $result->css);
+                },
+                function () {
+                }
+            )
+            ->done();
     }
 
     public function testContainsParser()
