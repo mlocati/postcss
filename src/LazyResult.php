@@ -125,7 +125,7 @@ class LazyResult
      * Processes input CSS through synchronous plugins
      * and calls {@link Result#warnings()}.
      *
-     * @return {Warning[]} warnings from plugins
+     * @return Warning[] warnings from plugins
      */
     public function warnings()
     {
@@ -138,7 +138,7 @@ class LazyResult
      * @example
      * lazy + '' === lazy.css;
      *
-     * @return {string} output CSS
+     * @return string output CSS
      */
     public function __toString()
     {
@@ -156,7 +156,7 @@ class LazyResult
      *                                    when all plugins will finish work
      * @param {onRejected}  onRejected  - callback will be execited on any error
      *
-     * @return {Promise} Promise API to make queue
+     * @return Promise Promise API to make queue
      *
      * @example
      * postcss([cssnext]).process(css).then(result => {
@@ -176,7 +176,7 @@ class LazyResult
      *
      * @param {onRejected} onRejected - callback will be execited on any error
      *
-     * @return {Promise} Promise API to make queue
+     * @return Promise Promise API to make queue
      *
      * @example
      * postcss([cssnext]).process(css).then(result => {
