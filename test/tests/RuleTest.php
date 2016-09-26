@@ -16,13 +16,13 @@ class RuleTest extends \PHPUnit_Framework_TestCase
     public function testReturnsArrayInSelectors()
     {
         $rule = new Rule(['selector' => 'a,b']);
-        $this->assertSame(['a', 'b'], $rule->getSelectors());
+        $this->assertSame(['a', 'b'], $rule->selectors);
     }
 
     public function testTrimsSelectors()
     {
         $rule = new Rule(['selector' => ".a\n, .b  , .c"]);
-        $this->assertSame(['.a', '.b', '.c'], $rule->getSelectors());
+        $this->assertSame(['.a', '.b', '.c'], $rule->selectors);
     }
 
     public function testIsSmartAboutSelectorsCommas()
@@ -32,35 +32,36 @@ class RuleTest extends \PHPUnit_Framework_TestCase
         ]);
         $this->assertSame(
             ['[foo=\'a, b\']', 'a:-moz-any(:focus, [href*=\',\'])'],
-            $rule->getSelectors()
+            $rule->selectors
         );
     }
 
     public function testReceiveArrayInSelectors()
     {
         $rule = new Rule(['selector' => 'i, b']);
-        $rule->setSelectors(['em', 'strong']);
+        $rule->selectors = ['em', 'strong'];
         $this->assertSame('em, strong', $rule->selector);
     }
 
     public function testSavesSeparatorInSelectors()
     {
         $rule = new Rule(['selector' => "i,\nb"]);
-        $rule->setSelectors(['em', 'strong']);
+        $rule->selectors = ['em', 'strong'];
         $this->assertSame("em,\nstrong", $rule->selector);
     }
 
     public function testUsesBetweenToDetectSeparatorInSelectors()
     {
         $rule = new Rule(['selector' => 'b', 'raws' => ['between' => '']]);
-        $rule->setSelectors(['b', 'strong']);
+        $rule->selectors = ['b', 'strong'];
         $this->assertSame('b,strong', $rule->selector);
     }
 
     public function testUsesSpaceInSeparatorBeDefaultInSelectors()
     {
         $rule = new Rule(['selector' => 'b']);
-        $rule->setSelectors(['b', 'strong']);
+        $rule->selectors = ['b', 'strong'];
+        $rule->_selector = 1;
         $this->assertSame('b, strong', $rule->selector);
     }
 

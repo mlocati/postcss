@@ -2,8 +2,8 @@
 
 namespace PostCSS;
 
-use PostCSS\SourceMap\Consumer\Consumer;
 use PostCSS\Path\NodeJS as Path;
+use PostCSS\SourceMap\Consumer\Consumer;
 
 /**
  * @link https://github.com/postcss/postcss/blob/master/lib/map-generator.es6
@@ -45,6 +45,11 @@ class MapGenerator
      */
     protected $map = null;
 
+    /**
+     * @param callable $stringify
+     * @param Root $root
+     * @param array $opts
+     */
     public function __construct(callable $stringify, Root $root, array $opts = [])
     {
         $this->stringify = $stringify;
@@ -53,6 +58,9 @@ class MapGenerator
         $this->opts = $opts;
     }
 
+    /**
+     * @return bool
+     */
     public function isMap()
     {
         if (isset($this->opts['map'])) {
@@ -64,6 +72,9 @@ class MapGenerator
         }
     }
 
+    /**
+     * @return PreviousMap[]
+     */
     public function previous()
     {
         if ($this->previousMaps === null) {
@@ -82,6 +93,9 @@ class MapGenerator
         return $this->previousMaps;
     }
 
+    /**
+     * @return bool
+     */
     public function isInline()
     {
         if (isset($this->mapOpts['inline'])) {
@@ -109,6 +123,9 @@ class MapGenerator
         }
     }
 
+    /**
+     * @return bool
+     */
     public function isSourcesContent()
     {
         if (isset($this->mapOpts['sourcesContent'])) {
@@ -151,7 +168,7 @@ class MapGenerator
         $me = $this;
         $already = [];
         $this->root->walk(function (Node $node) use ($me, &$already) {
-            if ($node->source) {
+            if ($node->source && isset($node->source['input'])) {
                 $from = $node->source['input']->from;
                 if ($from && !isset($already[$from])) {
                     $already[$from] = true;
@@ -180,6 +197,9 @@ class MapGenerator
         }
     }
 
+    /**
+     * @return bool
+     */
     public function isAnnotation()
     {
         if ($this->isInline()) {
@@ -222,6 +242,9 @@ class MapGenerator
         $this->css .= $eol.'/*# sourceMappingURL='.$content.' */';
     }
 
+    /**
+     * @return string
+     */
     public function outputFile()
     {
         if (isset($this->opts['to']) && $this->opts['to']) {
@@ -233,6 +256,9 @@ class MapGenerator
         }
     }
 
+    /**
+     * @return array First array item is the css. If not inline, there's a second item (a SourceMap\Generator instance)
+     */
     public function generateMap()
     {
         $this->generateString();
@@ -254,6 +280,11 @@ class MapGenerator
         }
     }
 
+    /**
+     * @param string $file
+     *
+     * @return string
+     */
     public function relative($file)
     {
         if (preg_match('/^\w+:\/\//', $file)) {
@@ -274,7 +305,12 @@ class MapGenerator
         }
     }
 
-    public function sourcePath($node)
+    /**
+     * @param Node $node
+     *
+     * @return string
+     */
+    public function sourcePath(Node $node)
     {
         if (isset($this->mapOpts['from']) && $this->mapOpts['from']) {
             return $this->mapOpts['from'];
@@ -364,6 +400,9 @@ class MapGenerator
         );
     }
 
+    /**
+     * @return array First array item is the css. If not inline, there's a second item (a SourceMap\Generator instance)
+     */
     public function generate()
     {
         $this->clearAnnotation();

@@ -2,8 +2,9 @@
 
 namespace PostCSS;
 
-use React\Promise\Promise;
 use PostCSS\Plugin\PluginInterface;
+use React\Promise\Promise;
+use React\Promise\PromiseInterface;
 
 /**
  * A Promise proxy for the result of PostCSS transformations.
@@ -50,6 +51,18 @@ class LazyResult
      */
     protected $processing = null;
 
+    /**
+     * Current plugin index.
+     *
+     * @var int
+     */
+    protected $plugin;
+
+    /**
+     * @param Processor $processor
+     * @param mixed $css
+     * @param array $opts
+     */
     public function __construct(Processor $processor, $css, array $opts = [])
     {
         $this->stringified = false;
@@ -122,8 +135,7 @@ class LazyResult
     }
 
     /**
-     * Processes input CSS through synchronous plugins
-     * and calls {@link Result#warnings()}.
+     * Processes input CSS through synchronous plugins and calls Result->warnings().
      *
      * @return Warning[] warnings from plugins
      */
@@ -133,10 +145,10 @@ class LazyResult
     }
 
     /**
-     * Alias for the {@link LazyResult#css} property.
+     * Alias for the LazyResult->css property.
      *
      * @example
-     * lazy + '' === lazy.css;
+     * (string) $lazy === $lazy->css;
      *
      * @return string output CSS
      */
@@ -146,22 +158,18 @@ class LazyResult
     }
 
     /**
-     * Processes input CSS through synchronous and asynchronous plugins
-     * and calls `onFulfilled` with a Result instance. If a plugin throws
-     * an error, the `onRejected` callback will be executed.
+     * Processes input CSS through synchronous and asynchronous plugins and calls `onFulfilled` with a Result instance.
+     * If a plugin throws an error, the `onRejected` callback will be executed.
      *
      * It implements standard Promise API.
      *
-     * @param {onFulfilled} onFulfilled - callback will be executed
-     *                                    when all plugins will finish work
-     * @param {onRejected}  onRejected  - callback will be execited on any error
+     * @param callable $onFulfilled Callback will be executed when all plugins will finish work
+     * @param callable $onRejected Callback will be execited on any error
      *
      * @return Promise Promise API to make queue
      *
      * @example
-     * postcss([cssnext]).process(css).then(result => {
-     *   console.log(result.css);
-     * });
+     * (new \PostCSS\Processor([Cssnext::class]))->process($css)->then(function ($result) { echo $result->css; })->done();
      */
     public function then($onFulfilled, $onRejected)
     {
@@ -169,20 +177,18 @@ class LazyResult
     }
 
     /**
-     * Processes input CSS through synchronous and asynchronous plugins
-     * and calls onRejected for each error thrown in any plugin.
-     *
+     * Processes input CSS through synchronous and asynchronous plugins and calls onRejected for each error thrown in any plugin.
      * It implements standard Promise API.
      *
-     * @param {onRejected} onRejected - callback will be execited on any error
+     * @param callable $onRejected Callback will be execited on any error
      *
      * @return Promise Promise API to make queue
      *
      * @example
-     * postcss([cssnext]).process(css).then(result => {
-     *   console.log(result.css);
-     * }).catch(error => {
-     *   console.error(error);
+     * (new \PostCSS\Processor([Cssnext::class]))->process($css)->then(function ($result) {
+     *   echo $result->css);
+     * })->catchError(function ($error) {
+     *   echo (string) $error;
      * });
      */
     public function catchError($onRejected)
@@ -193,6 +199,10 @@ class LazyResult
         );
     }
 
+    /**
+     * @param \Exception $error
+     * @param PluginInterface|string $plugin
+     */
     public function handleError(\Exception $error, $plugin)
     {
         try {
@@ -216,6 +226,12 @@ class LazyResult
         }
     }
 
+    /**
+     * @param callable $resolve
+     * @param callable $reject
+     *
+     * @return mixed
+     */
     public function asyncTick($resolve, $reject)
     {
         if ($this->plugin >= count($this->result->processor->plugins)) {
@@ -228,7 +244,7 @@ class LazyResult
             $promise = $this->run($plugin);
             $this->plugin += 1;
 
-            if ($promise instanceof Promise) {
+            if ($promise instanceof PromiseInterface) {
                 $me = $this;
                 $promise->then(
                     function () use ($me, $resolve, $reject) {
@@ -249,6 +265,9 @@ class LazyResult
         }
     }
 
+    /**
+     * @return Promise
+     */
     public function async()
     {
         if ($this->processed) {
@@ -284,6 +303,11 @@ class LazyResult
         return $this->processing;
     }
 
+    /**
+     * @throws \Exception
+     *
+     * @return \PostCSS\Result
+     */
     public function sync()
     {
         if ($this->processed) {
@@ -292,7 +316,7 @@ class LazyResult
         $this->processed = true;
 
         if ($this->processing) {
-            throw new \Exception('Use process(css).then(cb) to work with async plugins');
+            throw new \Exception('Use process($css)->then($cb) to work with async plugins');
         }
 
         if ($this->error) {
@@ -303,13 +327,20 @@ class LazyResult
         for ($i = 0; $i < count($processor->plugins); ++$i) {
             $promise = $this->run($processor->plugins[$i]);
             if ($promise instanceof Promise) {
-                throw new \Exception('Use process(css).then(cb) to work with async plugins');
+                throw new \Exception('Use process($css)->then($cb) to work with async plugins');
             }
         }
 
         return $this->result;
     }
 
+    /**
+     * @param PluginInterface $plugin
+     *
+     * @throws \Exception
+     *
+     * @return mixed
+     */
     public function run(PluginInterface $plugin)
     {
         $this->result->lastPlugin = $plugin;

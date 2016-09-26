@@ -2,9 +2,9 @@
 
 namespace PostCSS;
 
-use PostCSS\SourceMap\Consumer\Consumer as MozillaSourceMapConsumer;
-use PostCSS\SourceMap\Generator as MozillaSourceMapGenerator;
 use PostCSS\Path\NodeJS as Path;
+use PostCSS\SourceMap\Consumer\Consumer as SourceMapConsumer;
+use PostCSS\SourceMap\Generator as SourceMapGenerator;
 
 /**
  * Source map information from input CSS.
@@ -13,6 +13,10 @@ use PostCSS\Path\NodeJS as Path;
  * This class will automatically find source map in input CSS or in file system near input file (according `from` option).
  *
  * @link https://github.com/postcss/postcss/blob/master/lib/previous-map.es6
+ *
+ * @example
+ * $root = \PostCSS\Parser::parse($css, ['from' => 'a.sass.css']);
+ * $root->input->map //=> PreviousMap
  */
 class PreviousMap
 {
@@ -22,6 +26,8 @@ class PreviousMap
     public $annotation = '';
 
     /**
+     * Was source map inlined by data-uri to input CSS.
+     *
      * @var bool
      */
     public $inline;
@@ -32,13 +38,13 @@ class PreviousMap
     public $text = null;
 
     /**
-     * @var MozillaSourceMapConsumer|null
+     * @var SourceMapConsumer|null
      */
     private $consumerCache = null;
 
     /**
      * @param string $css Input CSS source
-     * @param processOptions $opts {@link Processor#process} options
+     * @param array $opts Options
      */
     public function __construct($css, array $opts)
     {
@@ -56,12 +62,12 @@ class PreviousMap
      *
      * It is lazy method, so it will create object only on first call and then it will use cache.
      *
-     * @return MozillaSourceMapConsumer object woth source map information
+     * @return SourceMapConsumer object woth source map information
      */
     public function consumer()
     {
         if ($this->consumerCache === null) {
-            $this->consumerCache = MozillaSourceMapConsumer::construct($this->text);
+            $this->consumerCache = SourceMapConsumer::construct($this->text);
         }
 
         return $this->consumerCache;
@@ -70,7 +76,7 @@ class PreviousMap
     /**
      * Does source map contains `sourcesContent` with input source text.
      *
-     * @return {boolean} Is `sourcesContent` present
+     * @return bool Is `sourcesContent` present
      */
     public function withContent()
     {
@@ -79,11 +85,20 @@ class PreviousMap
         return !empty($sc);
     }
 
+    /**
+     * @param string $string
+     * @param string $start
+     *
+     * @return bool
+     */
     public function startWith($string, $start)
     {
         return is_string($string) && $string !== '' && substr($string, 0, strlen($start)) === $start;
     }
 
+    /**
+     * @param string $css
+     */
     public function loadAnnotation($css)
     {
         if (preg_match('/\/\*\s*# sourceMappingURL=(.*)\s*\*\//', $css, $match)) {
@@ -91,6 +106,13 @@ class PreviousMap
         }
     }
 
+    /**
+     * @param string $text
+     *
+     * @throws Exception\UnsupportedSourceMapEncoding
+     *
+     * @return string
+     */
     public function decodeInline($text)
     {
         $utfd64 = 'data:application/json;charset=utf-8;base64,';
@@ -116,6 +138,15 @@ class PreviousMap
         }
     }
 
+    /**
+     * @param string $file
+     * @param mixed $prev
+     *
+     * @throws Exception\UnableToLoadPreviousSourceMap
+     * @throws Exception\UnsupportedPreviousSourceMapFormat
+     *
+     * @return string|false
+     */
     public function loadMap($file, $prev)
     {
         if ($prev === false) {
@@ -132,9 +163,9 @@ class PreviousMap
                 } else {
                     throw new Exception\UnableToLoadPreviousSourceMap($prevPath);
                 }
-            } elseif ($prev instanceof MozillaSourceMapConsumer) {
-                return (string) MozillaSourceMapGenerator::fromSourceMap($prev);
-            } elseif ($prev instanceof MozillaSourceMapGenerator) {
+            } elseif ($prev instanceof SourceMapConsumer) {
+                return (string) SourceMapGenerator::fromSourceMap($prev);
+            } elseif ($prev instanceof SourceMapGenerator) {
                 return (string) $prev;
             } elseif ($this->isMap($prev)) {
                 return json_encode($prev);
@@ -157,6 +188,11 @@ class PreviousMap
         }
     }
 
+    /**
+     * @param array|mixed $map
+     *
+     * @return bool
+     */
     public function isMap($map)
     {
         $result = false;

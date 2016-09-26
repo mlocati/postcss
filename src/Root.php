@@ -6,9 +6,17 @@ namespace PostCSS;
  * Represents a CSS file and contains all its parsed nodes.
  *
  * @link https://github.com/postcss/postcss/blob/master/lib/root.es6
+ *
+ * @example
+ * $root = \PostCSS\Parser::parse('a{color:black} b{z-index:2}');
+ * $root->type         //=> 'root'
+ * count($root->nodes) //=> 2
  */
 class Root extends Container
 {
+    /**
+     * @param array $defaults
+     */
     public function __construct(array $defaults = [])
     {
         parent::__construct($defaults);
@@ -18,6 +26,11 @@ class Root extends Container
         }
     }
 
+    /**
+     * {@inheritdoc}
+     *
+     * @see Container::removeChild()
+     */
     public function removeChild($child)
     {
         $child = $this->index($child);
@@ -34,6 +47,11 @@ class Root extends Container
         return parent::removeChild($child);
     }
 
+    /**
+     * {@inheritdoc}
+     *
+     * @see Container::normalize()
+     */
     public function normalize($child, $sample = null, $type = null)
     {
         $nodes = parent::normalize($child);
@@ -65,9 +83,9 @@ class Root extends Container
     }
 
     /**
-     * Returns a {@link Result} instance representing the root's CSS.
+     * Returns a Result instance representing the root's CSS.
      *
-     * @param ProcessOptions $opts Options with only `to` and `map` keys
+     * @param array $opts Options with only `to` and `map` keys. Same values as LazyResult::__constructor
      *
      * @return Result Result with current root's CSS
      */
@@ -79,7 +97,7 @@ class Root extends Container
     }
 
     /**
-     * @deprecated Use Root#removeChild
+     * @deprecated Use Root->removeChild
      */
     public function remove()
     {
@@ -92,7 +110,7 @@ class Root extends Container
     }
 
     /**
-     * @deprecated Use Root#source->input->map
+     * @deprecated Use Root->source->input->map
      */
     public function prevMap()
     {

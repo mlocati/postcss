@@ -3,13 +3,13 @@
 namespace PostCSS;
 
 /**
- * Represents a plugin's warning. It can be created using {@link Node#warn}.
+ * Represents a plugin's warning. It can be created using Node->warn.
  *
  * @link https://github.com/postcss/postcss/blob/master/lib/warning.es6
  *
  * @example
- * if ( decl.important ) {
- *     decl.warn(result, 'Avoid !important', { word: '!important' });
+ * if ($decl->important ) {
+ *     $decl->warn($result, 'Avoid !important', ['word' => '!important']);
  * }
  */
 class Warning
@@ -17,7 +17,7 @@ class Warning
     /**
      * The warning message.
      *
-     * @var
+     * @var string
      */
     public $text;
 
@@ -43,23 +43,35 @@ class Warning
     public $node = null;
 
     /**
-     * The name of the plugin that created it will fill this property automatically. this warning. When you call {@link Node#warn}.
+     * The name of the plugin that created it will fill this property automatically when you call Node->warn.
      *
      * @var string|null
      */
     public $plugin = null;
 
+    /**
+     * Index in CSS node string that caused the warning.
+     *
+     * @var int|null
+     */
     public $index = null;
 
+    /**
+     * Word in CSS source that caused the warning.
+     *
+     * @var string|null
+     */
     public $word = null;
 
     /**
      * @param string $text Warning message
-     * @param array $opts   Warning options
-     * @param {Node}   opts.node   CSS node that caused the warning
-     * @param string $opts.word   Word in CSS source that caused the warning
-     * @param {number} opts.index  Index in CSS node string that caused the warning
-     * @param string $opts.plugin  Name of the plugin that created this warning. {@link Result#warn} fills this property automatically
+     * @param array $opts Warning options. {
+     *
+     *     @var Node $node CSS node that caused the warning
+     *     @var string $word Word in CSS source that caused the warning
+     *     @var int $index Index in CSS node string that caused the warning
+     *     @var string $plugin Name of the plugin that created this warning. Result->warn fills this property automatically.
+     * }
      */
     public function __construct($text, array $opts = [])
     {

@@ -8,15 +8,14 @@ use PostCSS\Terminal;
 /**
  * The CSS parser throws this error for broken CSS.
  *
- * Custom parsers can throw this error for broken custom syntax using
- * the {@link Node#error} method.
+ * Custom parsers can throw this error for broken custom syntax using Node->error method.
  *
  * PostCSS will use the input source map to detect the original error location.
- * If you wrote a Sass file, compiled it to CSS and then parsed it with PostCSS,
- * PostCSS will show the original position in the Sass file.
+ * If you wrote a Sass file, compiled it to CSS and then parsed it with PostCSS, PostCSS will show the original position in the Sass file.
  *
- * If you need the position in the PostCSS input
- * (e.g., to debug the previous compiler), use `error.input.file`.
+ * If you need the position in the PostCSS input (e.g., to debug the previous compiler), use `$error->input['file']`.
+ *
+ * @link https://github.com/postcss/postcss/blob/master/lib/css-syntax-error.es6
  */
 class CssSyntaxError extends Exception
 {
@@ -90,6 +89,9 @@ class CssSyntaxError extends Exception
         $this->message = (string) $message;
     }
 
+    /**
+     * Updates the message.
+     */
     public function updateMessage()
     {
         $plugin = ($this->postcssPlugin instanceof PluginInterface) ? $this->postcssPlugin->getName() : (string) $this->postcssPlugin;
@@ -208,6 +210,11 @@ class CssSyntaxError extends Exception
         return implode("\n", $output);
     }
 
+    /**
+     * {@inheritdoc}
+     *
+     * @see Exception::__toString()
+     */
     public function __toString()
     {
         $fqn = get_class($this);

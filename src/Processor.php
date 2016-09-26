@@ -9,6 +9,11 @@ use PostCSS\Plugin\PluginInterface;
  *
  * @link https://github.com/postcss/postcss/blob/master/lib/processor.es6
  * @link https://github.com/postcss/postcss/blob/master/lib/postcss.es6
+ *
+ * @example
+ * $processor = new \PostCSS\Processor([Autoprefixer::class, Precss::class]);
+ * $processor->process($css1)->then(function ($result) { echo $result->css; })->done();
+ * $processor->process($css2)->then(function ($result) { echo $result->css; })->done();
  */
 class Processor
 {
@@ -25,7 +30,7 @@ class Processor
     public $plugins;
 
     /**
-     * @param PluginInterface[]|callable[]|Processor[]} $plugins PostCSS plugins
+     * @param PluginInterface[]|callable[]|Processor[]} $plugins PostCSS plugins. Processor->usePlugin for plugin format
      */
     public function __construct($plugins = [])
     {
@@ -40,31 +45,24 @@ class Processor
     /**
      * Adds a plugin to be used as a CSS processor.
      *
-     * PostCSS plugin can be in 4 formats:
-     * * A plugin created by {@link postcss.plugin} method.
-     * * A function. PostCSS will pass the function a {@link Root}
-     *   as the first argument and current {@link Result} instance
-     *   as the second.
-     * * An object with a `postcss` method. PostCSS will use that method
-     *   as described in #2.
-     * * Another {@link Processor} instance. PostCSS will copy plugins
-     *   from that instance into this one.
+     * PostCSS plugin can be in the following formats:
+     * - An \PostCSS\PluginInterface instance.
+     * - The name of a \PostCSS\PluginInterface class.
+     * - A callable that returns a \PostCSS\PluginInterface instance.
+     * - Another Processor} instance. PostCSS will copy plugins from that instance into this one.
      *
-     * Plugins can also be added by passing them as arguments when creating
-     * a `postcss` instance (see [`postcss(plugins)`]).
+     * Plugins can also be added by passing them as arguments when creating \PostCSS\Processor instance.
      *
      * Asynchronous plugins should return a `\React\Promise\Promise` instance.
      *
-     * @param {Plugin|pluginFunction|Processor} plugin - PostCSS plugin
-     *                                                   or {@link Processor}
-     *                                                   with plugins
+     * @param PluginInterface|string|callable|Processor $plugin PostCSS plugin Processor with plugins
      *
      * @example
-     * const processor = postcss()
-     *   .use(autoprefixer)
-     *   .use(precss);
+     * $processor = (new \PostCSS\Processor())
+     *     ->usePlugin(Autoprefixer::class)
+     *     ->usePlugin(Precss::class);
      *
-     * @return {Processes} current processor to make methods chain
+     * @return static Current processor to make methods chain
      */
     public function usePlugin($plugin)
     {
@@ -74,26 +72,17 @@ class Processor
     }
 
     /**
-     * Parses source CSS and returns a {@link LazyResult} Promise proxy.
-     * Because some plugins can be asynchronous it doesn't make
-     * any transformations. Transformations will be applied
-     * in the {@link LazyResult} methods.
+     * Parses source CSS and returns a LazyResult Promise proxy.
+     * Because some plugins can be asynchronous it doesn't make any transformations.
+     * Transformations will be applied in the LazyResult methods.
      *
-     * @param {string|toString|Result} css - String with input CSS or
-     *                                       any object with a `toString()`
-     *                                       method, like a Buffer.
-     *                                       Optionally, send a {@link Result}
-     *                                       instance and the processor will
-     *                                       take the {@link Root} from it
-     * @param {processOptions} [opts]      - options
+     * @param string|Root|Result|LazyResult $css String with input CSS or any object with a `__toString()` method. Optionally, send a Result instance and the processor will take the Root from it
+     * @param array $opts] Options
      *
      * @return LazyResult \React\Promise\Promise proxy
      *
      * @example
-     * processor.process(css, { from: 'a.css', to: 'a.out.css' })
-     *   .then(result => {
-     *      console.log(result.css);
-     *   });
+     * $processor->process($css, ['from' => 'a.css', 'to' => 'a.out.css'])->then(function ($result) { echo $result->css; })->done();
      */
     public function process($css, array $opts = [])
     {
