@@ -16,7 +16,7 @@ class CssSyntaxErrorTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @param string $css
-     * @param array  $opts
+     * @param array $opts
      *
      * @return CssSyntaxError|null
      */

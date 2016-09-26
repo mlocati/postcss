@@ -6,48 +6,76 @@ use PostCSS\Plugin\PluginInterface;
 
 /**
  * Provides the result of the PostCSS transformations.
- * A Result instance is returned by {@link LazyResult#then} or {@link Root#toResult} methods.
+ * A Result instance is returned by LazyResult->then or Root->toResult methods.
  *
  * @link https://github.com/postcss/postcss/blob/master/lib/result.es6
  *
  * @example
- * postcss([cssnext]).process(css).then(function (result) {
- *    console.log(result.css);
+ * (new \PostCSS\Processor([cssnext]))->process($css)->then(function ($result) {
+ *    echo $result->css;
  * });
  * @example
- * var result2 = postcss.parse(css).toResult();
+ * $result2 = \PostCSS\Parser::parse($css).toResult();
  *
  * @property string $content An alias for the Result->css property. Use it with syntaxes that generate non-CSS output
  */
 class Result
 {
     /**
+     * The Processor instance used for this transformation.
+     *
      * @var Processor
      */
     public $processor;
 
     /**
+     * Contains messages from plugins (e.g., warnings or custom messages). Each message should have type and plugin properties.
+     *
      * @var array
      */
     public $messages;
 
     /**
+     * Root node after all transformations.
+     *
+     * @example
+     * $root->toResult()->root === root;
+     *
      * @var Root|null
      */
     public $root;
 
     /**
+     * Options from the Processor->process or Root->toResult} call that produced this Result instance.
+     *
+     * @example
+     * $root->toResult($opts)->opts == $opts;
+     *
      * @var array
      */
     public $opts;
 
     /**
-     * @var string|null A CSS string representing of {@link Result#root}
+     * A CSS string representing of Result->root.
+     *
+     * @example
+     * \PostCSS\Parser::parse('a{}')->toResult()->css //=> 'a{}'
+     *
+     * @var string|null
      */
     public $css;
 
     /**
-     * @var SourceMap\Generator|null An instance of `SourceMapGenerator` class from the `source-map` library, representing changes o the {@link Result#root} instance
+     * An instance of `SourceMapGenerator` class from the `source-map` library, representing changes o the Result->root instance.
+     *
+     * @example
+     * $result->map->toJSON() //=> ['version' => 3, 'file' => 'a.css', ...]
+     * @example
+     * if ($result->map) {
+     *     file_put_contents($result->opts['to'].'.map', (string) $result->map);
+     * }
+     *
+     * @var SourceMap\Generator|null
      */
     public $map;
 
@@ -57,10 +85,9 @@ class Result
     public $lastPlugin = null;
 
     /**
-     * @param {Processor} processor - processor used for this transformation
-     * @param {Root}      root      - Root node after all transformations
-     * @param {processOptions} opts - options from the {@link Processor#process}
-     *                                or {@link Root#toResult}
+     * @param Processor $processor Processor used for this transformation
+     * @param Root $root Root node after all transformations
+     * @param array $opts Options from the Processor->process or Root->toResult
      */
     public function __construct(Processor $processor = null, Root $root = null, array $opts = [])
     {
@@ -73,9 +100,9 @@ class Result
     }
 
     /**
-     * Returns for {@link Result#css} content.
+     * Returns for Result->css content.
      *
-     * @return string string representing of {@link Result#root}
+     * @return string string representing of Result->root
      */
     public function __toString()
     {
@@ -83,14 +110,16 @@ class Result
     }
 
     /**
-     * Creates an instance of {@link Warning} and adds it to {@link Result#messages}.
+     * Creates an instance of {@link Warning} and adds it to Result->messages.
      *
-     * @param string $text - warning message
-     * @param array  $opts - warning options
-     * @param Node   opts.node   - CSS node that caused the warning
-     * @param string opts.word   - word in CSS source that caused the warning
-     * @param int opts.index  - index in CSS node string that caused the warning
-     * @param string opts.plugin - name of the plugin that created this warning. {@link Result#warn} fills this property automatically
+     * @param string $text Warning message
+     * @param array $opts Warning options {
+     *
+     *     @var Node $node CSS node that caused the warning
+     *     @var string $word Word in CSS source that caused the warning
+     *     @var int $index Index in CSS node string that caused the warning
+     *     @var string $plugin Name of the plugin that created this warning. Result->warn fills this property automatically.
+     * }
      *
      * @return Warning created warning
      */
@@ -109,9 +138,14 @@ class Result
     }
 
     /**
-     * Returns warnings from plugins. Filters {@link Warning} instances from {@link Result#messages}.
+     * Returns warnings from plugins. Filters Warning instances from Result->messages.
      *
-     * @return {Warning[]} warnings from plugins
+     * @example
+     * foreach ($result->warnings() as warn) {
+     *     echo (string) $warn;
+     * }
+     *
+     * @return Warning[] warnings from plugins
      */
     public function warnings()
     {

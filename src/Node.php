@@ -45,13 +45,29 @@ class Node
      *   - `before`: the space symbols before the node.
      *   - `left`: the space symbols between `/*` and the comment’s text.
      *   - `right`: the space symbols between the comment’s text.
+     * - Root:
+     *   - `after`: the space symbols after the last child to the end of file.
+     *   - `semicolon`: is the last child has an (optional) semicolon.
+     * - Rule:
+     *   - `before`: the space symbols before the node. It also stores `*` and `_` symbols before the declaration (IE hack).
+     *   - `after`: the space symbols after the last child of the node to the end of the node.
+     *   - `between`: the symbols between the property and value for declarations, selector and `{` for rules, or last parameter and `{` for at-rules.
+     *   - `semicolon`: contains true if the last child has an (optional) semicolon.
      *
      * PostCSS cleans at-rule parameters from comments and extra spaces, but it stores origin content in raws properties.
      * As such, if you don’t change a declaration’s value, PostCSS will use the raw value with comments.
      *
      * @example
-     * $root = \PostCSS\Parser::parse('  @media\nprint {\n}')
+     * $root = \PostCSS\Parser::parse('  @media\nprint {\n}');
      * $root->first->first->raws //=> ['before' => '  ', 'between' => ' ', 'afterName' = > "\n", 'after' => "\n"]
+     * 
+     * @example
+     * \PostCSS\Parser::parse('a {}\n').raws //=> ['after' => "\n"]
+     * \PostCSS\Parser::parse('a {}').raws   //=> ['after => '']
+     *
+     * @example
+     * $root = \PostCSS\Parser::parse('a {\n  color:black\n}');
+     * $root->first->first->raws //=> ['before' => '', 'between' => ' ', 'after' => "\n"]
      *
      * @var Raws
      */

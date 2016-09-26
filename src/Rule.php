@@ -6,14 +6,28 @@ namespace PostCSS;
  * Represents a CSS rule: a selector followed by a declaration block.
  *
  * @link https://github.com/postcss/postcss/blob/master/lib/rule.es6
+ *
+ * @example
+ * $root = \PostCSS\Parser::parse('a{}');
+ * $rule = $root->first;
+ * $rule->type    //=> 'rule'
+ * (string) $rule //=> 'a{}'
+ *
+ * @property string[] $selectors An array containing the rule's individual selectors. Groups of selectors are split at commas
+ * @property @deprecated string $_selector Rule->_selector is deprecated. Use Rule->raws->selector
  */
 class Rule extends Container
 {
     /**
+     * The rule’s full selector represented as a string.
+     *
      * @var string|null
      */
     public $selector = null;
 
+    /**
+     * @param array $defaults
+     */
     public function __construct(array $defaults = [])
     {
         $selectors = null;
@@ -27,41 +41,38 @@ class Rule extends Container
             $this->nodes = [];
         }
         if ($selectors !== null) {
-            $this->setSelectors($selectors);
+            $this->selectors = $selectors;
         }
     }
 
-    /**
-     * An array containing the rule's individual selectors.
-     * Groups of selectors are split at commas.
-     */
-    public function getSelectors()
+    public function __get($name)
     {
-        return ListUtil::comma($this->selector);
-    }
-
-    public function setSelectors(array $values)
-    {
-        if (!isset($this->selector) || !$this->selector || !preg_match('/,\s*/', $this->selector, $match)) {
-            $match = null;
+        switch ($name) {
+            case 'selectors':
+                return ListUtil::comma($this->selector);
+            case '_selector':
+                return $this->raws->selector;
+            default:
+                return parent::__get($name);
         }
-        $sep = ($match !== null) ? $match[0] : ','.$this->raw('between', 'beforeOpen');
-        $this->selector = implode($sep, $values);
     }
 
-    /**
-     * @deprecated Rule#_selector is deprecated. Use Rule#raws.selector
-     */
-    public function _getSelector()
+    public function __set($name, $value)
     {
-        return $this->raws->selector;
-    }
-
-    /**
-     * @deprecated Rule#_selector is deprecated. Use Rule#raws.selector
-     */
-    public function _setSelector($val)
-    {
-        $this->raws->selector = $val;
+        switch ($name) {
+            case 'selectors':
+                if (!$this->selector || !preg_match('/,\s*/', $this->selector, $match)) {
+                    $match = null;
+                }
+                $sep = ($match !== null) ? $match[0] : ','.$this->raw('between', 'beforeOpen');
+                $this->selector = implode($sep, (array) $value);
+                break;
+            case '_selector':
+                $this->raws->selector = $value;
+                break;
+            default:
+                parent::__set($name, $value);
+                break;
+        }
     }
 }

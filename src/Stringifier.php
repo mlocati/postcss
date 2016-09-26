@@ -32,6 +32,11 @@ class Stringifier
         'commentRight' => ' ',
     ];
 
+    /**
+     * @param string $str
+     *
+     * @return string
+     */
     protected static function capitalize($str)
     {
         $str = (string) $str;
@@ -46,12 +51,20 @@ class Stringifier
         return $str;
     }
 
+    /**
+     * @param callable|null $builder
+     * @param callable|null $stringifier
+     */
     public function __construct(callable $builder = null, callable $stringifier = null)
     {
         $this->builder = $builder;
         $this->stringifier = $stringifier;
     }
 
+    /**
+     * @param Node $node
+     * @param bool $semicolon
+     */
     public function stringify(Node $node, $semicolon = null)
     {
         if ($this->stringifier !== null) {
@@ -63,6 +76,9 @@ class Stringifier
         }
     }
 
+    /**
+     * @param Node $node
+     */
     protected function root(Node $node)
     {
         $this->body($node);
@@ -72,6 +88,9 @@ class Stringifier
         }
     }
 
+    /**
+     * @param Node $node
+     */
     protected function comment(Node $node)
     {
         $left = $this->raw($node, 'left', 'commentLeft');
@@ -79,6 +98,10 @@ class Stringifier
         call_user_func($this->builder, '/*'.$left.$node->text.$right.'*/', $node);
     }
 
+    /**
+     * @param Node $node
+     * @param bool $semicolon
+     */
     protected function decl(Node $node, $semicolon)
     {
         $between = $this->raw($node, 'between', 'colon');
@@ -92,11 +115,18 @@ class Stringifier
         call_user_func($this->builder, $string, $node);
     }
 
+    /**
+     * @param Node $node
+     */
     protected function rule(Node $node)
     {
         $this->block($node, $this->rawValue($node, 'selector'));
     }
 
+    /**
+     * @param Node $node
+     * @param bool $semicolon
+     */
     protected function atrule(Node $node, $semicolon)
     {
         $name = '@'.$node->name;
@@ -116,6 +146,9 @@ class Stringifier
         }
     }
 
+    /**
+     * @param Node $node
+     */
     protected function body(Node $node)
     {
         $nodeNodesCount = count($node->nodes);
@@ -137,6 +170,10 @@ class Stringifier
         }
     }
 
+    /**
+     * @param Node $node
+     * @param string $start
+     */
     protected function block(Node $node, $start)
     {
         $between = $this->raw($node, 'between', 'beforeOpen');
@@ -154,6 +191,13 @@ class Stringifier
         call_user_func($this->builder, '}', $node, 'end');
     }
 
+    /**
+     * @param Node $node
+     * @param string $own
+     * @param string|null $detect
+     *
+     * @return mixed
+     */
     public function raw(Node $node, $own, $detect = null)
     {
         if ($detect === null) {
@@ -215,6 +259,11 @@ class Stringifier
         return $value;
     }
 
+    /**
+     * @param Node $root
+     *
+     * @return bool|null
+     */
     protected function rawSemicolon(Node $root)
     {
         $value = null;
@@ -232,6 +281,11 @@ class Stringifier
         return $value;
     }
 
+    /**
+     * @param Node $root
+     *
+     * @return string|null
+     */
     protected function rawEmptyBody(Node $root)
     {
         $value = null;
@@ -249,6 +303,11 @@ class Stringifier
         return $value;
     }
 
+    /**
+     * @param Node $root
+     *
+     * @return string|null
+     */
     protected function rawIndent(Node $root)
     {
         $indent = $root->raws->indent;
@@ -272,6 +331,12 @@ class Stringifier
         return $value;
     }
 
+    /**
+     * @param Container $root
+     * @param Node $node
+     *
+     * @return string|null
+     */
     protected function rawBeforeComment(Container $root, Node $node)
     {
         $value = null;
@@ -293,6 +358,12 @@ class Stringifier
         return $value;
     }
 
+    /**
+     * @param Container $root
+     * @param Node $node
+     *
+     * @return string|null
+     */
     protected function rawBeforeDecl(Container $root, Node $node)
     {
         $value = null;
@@ -314,6 +385,11 @@ class Stringifier
         return $value;
     }
 
+    /**
+     * @param Container $root
+     *
+     * @return string|null
+     */
     protected function rawBeforeRule(Container $root)
     {
         $value = null;
@@ -334,6 +410,11 @@ class Stringifier
         return $value;
     }
 
+    /**
+     * @param Container $root
+     *
+     * @return string|null
+     */
     protected function rawBeforeClose(Container $root)
     {
         $value = null;
@@ -354,6 +435,11 @@ class Stringifier
         return $value;
     }
 
+    /**
+     * @param Container $root
+     *
+     * @return string|null
+     */
     protected function rawBeforeOpen(Container $root)
     {
         $value = null;
@@ -371,6 +457,11 @@ class Stringifier
         return $value;
     }
 
+    /**
+     * @param Container $root
+     *
+     * @return string|null
+     */
     protected function rawColon(Container $root)
     {
         $value = null;
@@ -386,6 +477,12 @@ class Stringifier
         return $value;
     }
 
+    /**
+     * @param Node $node
+     * @param string $detect
+     *
+     * @return string
+     */
     protected function beforeAfter(Node $node, $detect)
     {
         if ($node->type === 'decl') {
@@ -417,6 +514,12 @@ class Stringifier
         return $value;
     }
 
+    /**
+     * @param Node $node
+     * @param string $prop
+     *
+     * @return mixed|null
+     */
     public function rawValue(Node $node, $prop)
     {
         $value = isset($node->$prop) ? $node->$prop : null;
