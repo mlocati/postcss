@@ -5,9 +5,15 @@ namespace PostCSS\Tests;
 use Exception;
 use PostCSS\Tests\Helpers\DownloadError;
 use PostCSS\Parser;
+use PostCSS\Tests\Helpers\FilesystemError;
 
-class IntegrationTest extends \PHPUnit_Framework_TestCase
+class IntegrationTest extends Helpers\FilesystemTest
 {
+    protected function getDirectoryName()
+    {
+        return 'cache';
+    }
+
     public function providerTestReal()
     {
         return [
@@ -18,11 +24,32 @@ class IntegrationTest extends \PHPUnit_Framework_TestCase
         ];
     }
 
-    private static function getRemoteContents($url, $parentUrl = null)
+    private function getRemoteContents($url, $parentUrl = null)
     {
         if (strpos($url, 'github:') === 0) {
             $p = explode(':', $url);
             $url = 'https://raw.githubusercontent.com/'.$p[1].'/master/'.$p[2];
+        }
+        $cacheName = md5($url.((string) $parentUrl));
+        if (preg_match('/^\w+:\/\/([\w\-]+(?:\.[\w\-]+)+)/', $url, $m)) {
+            $cacheName .= '-'.$m[1];
+        }
+        if (preg_match('/\/([\w\-]+)((?:\.\w+)*)$/', $url, $m)) {
+            $cacheName .= '-'.$m[1];
+            if (isset($m[2]) && $m[2]) {
+                $cacheName .= $m[2];
+            } else {
+                $cacheName .= '.txt';
+            }
+        } else {
+            $cacheName .= '.txt';
+        }
+        $cachePath = $this->getAbsoluteFilePath($cacheName);
+        if (is_file($cachePath)) {
+            $result = @file_get_contents($cachePath);
+            if ($result !== false) {
+                return $result;
+            }
         }
         $headers = @get_headers($url);
         if (empty($headers)) {
@@ -54,6 +81,11 @@ class IntegrationTest extends \PHPUnit_Framework_TestCase
         switch ($contentEncoding) {
         }
 
+        try {
+            $this->createAbsoluteFile($cachePath, $data);
+        } catch (FilesystemError $x) {
+        }
+
         return $data;
     }
 
@@ -65,9 +97,9 @@ class IntegrationTest extends \PHPUnit_Framework_TestCase
         try {
             $resourceUrls = [];
             if (substr($url, -4) === '.css') {
-                $resourceUrls[$url] = self::getRemoteContents($url);
+                $resourceUrls[$url] = $this->getRemoteContents($url);
             } else {
-                $contents = self::getRemoteContents($url);
+                $contents = $this->getRemoteContents($url);
                 if (!preg_match_all('/[^"]+\.css"|[^\']+\.css\'/', $contents, $m)) {
                     throw new Exception("Can't find CSS links at $url");
                 }
@@ -86,7 +118,7 @@ class IntegrationTest extends \PHPUnit_Framework_TestCase
                     $m[0]
                 );
                 foreach ($files as $file) {
-                    $resourceUrls[$file] = self::getRemoteContents($file);
+                    $resourceUrls[$file] = $this->getRemoteContents($file);
                 }
             }
 
