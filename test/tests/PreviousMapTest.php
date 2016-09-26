@@ -195,24 +195,21 @@ class PreviousMapTest extends Helpers\DeletableDirectoryTest
 
     public function testShouldCallFunctionWithOptsFrom()
     {
-        $numberOfAssertions = 0;
-
         $css = "body{}\n/*# sourceMappingURL=a.map */";
         $file = $this->createRelativeFile('previous-sourcemap-function.map', static::getMap());
         $me = $this;
         $opts = [
             'from' => 'a.css',
             'map' => [
-                'prev' => function ($from) use ($me, $file, &$numberOfAssertions) {
+                'prev' => function ($from) use ($me, $file) {
                     $me->assertSame('a.css', $from);
-                    ++$numberOfAssertions;
 
                     return $file;
                 },
             ],
         ];
         Parser::parse($css, $opts);
-        $this->assertSame(1, $numberOfAssertions);
+        $this->assertSame(1, static::getCount());
     }
 
     public function testShouldRaiseWhenFunctionReturnsInvalidPath()

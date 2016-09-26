@@ -3,14 +3,14 @@
 namespace PostCSS\Tests;
 
 use PostCSS\Exception\CssSyntaxError;
+use PostCSS\LazyResult;
+use PostCSS\Node;
 use PostCSS\Parser;
+use PostCSS\Path\NodeJS as Path;
 use PostCSS\Plugin\ClosurePlugin;
 use PostCSS\Processor;
-use PostCSS\Node;
-use PostCSS\Root;
-use PostCSS\Path\NodeJS as Path;
-use PostCSS\LazyResult;
 use PostCSS\Result;
+use PostCSS\Root;
 
 class ProcessorTest extends \PHPUnit_Framework_TestCase
 {
@@ -235,55 +235,46 @@ test.after( function() {
             $calls .= 'b';
         });
 
-        $assertions = 0;
         $me = $this;
         (new Processor([$a, $b]))
             ->process('')
             ->then(
-                function () use ($me, &$calls, &$assertions) {
+                function () use ($me, &$calls) {
                     $me->assertSame('ab', $calls);
-                    ++$assertions;
                 },
                 function () {
                 }
             )
             ->done();
-        $this->assertSame(1, $assertions);
+        $this->assertSame(1, static::getCount());
     }
 
     public function testParsesConvertsAndStringifiesCSS()
     {
-        $assertions = 0;
         $me = $this;
         $a = new ClosurePlugin(
-            function ($css) use ($me, &$assertions) {
+            function ($css) use ($me) {
                 $me->assertInstanceOf(Root::class, $css);
-                ++$assertions;
             }
         );
         $this->assertInternalType('string', (new Processor([$a]))->process('a {}')->css);
-        $this->assertSame(1, $assertions);
+        $this->assertSame(2, static::getCount());
     }
 
     public function testSendResultToPlugins()
     {
         $processor = new Processor();
-        $assertions = 0;
         $me = $this;
         $a = new ClosurePlugin(
-            function ($css, $result) use ($me, &$assertions, $processor) {
+            function ($css, $result) use ($me, $processor) {
                 $me->assertInstanceOf(Result::class, $result);
-                ++$assertions;
                 $me->assertSame($processor, $result->processor);
-                ++$assertions;
                 $me->assertSame(['map' => true], $result->opts);
-                ++$assertions;
                 $me->assertSame($css, $result->root);
-                ++$assertions;
             }
         );
         $processor->usePlugin($a)->process('a {}', ['map' => true])->css;
-        $this->assertSame(4, $assertions);
+        $this->assertSame(4, static::getCount());
     }
 
     public function testAcceptsSourceMapFromPostCSS()
@@ -310,51 +301,43 @@ test.after( function() {
     public function testWorksAsyncWithoutPlugins()
     {
         $me = $this;
-        $assertions = 0;
-
         (new Processor())->process('a {}')
             ->then(
-                function ($result) use ($me, &$assertions) {
+                function ($result) use ($me) {
                     $me->assertSame('a {}', $result->css);
-                    ++$assertions;
                 },
                 function () {
                 }
             )
             ->done();
-        $this->assertSame(1, $assertions);
+        $this->assertSame(1, static::getCount());
     }
 
     public function testSetsLastPluginToResult()
     {
-        $assertions = 0;
         $me = $this;
-        $plugin1 = new ClosurePlugin(function ($css, $result) use ($me, &$assertions, &$plugin1) {
+        $plugin1 = new ClosurePlugin(function ($css, $result) use ($me, &$plugin1) {
             $me->assertSame($result->lastPlugin, $plugin1);
-            ++$assertions;
         });
-        $plugin2 = new ClosurePlugin(function ($css, $result) use ($me, &$assertions, &$plugin2) {
+        $plugin2 = new ClosurePlugin(function ($css, $result) use ($me, &$plugin2) {
             $me->assertSame($result->lastPlugin, $plugin2);
-            ++$assertions;
         });
 
         $processor = new Processor([$plugin1, $plugin2]);
         $processor->process('a{}')
             ->then(
-                function ($result) use ($me, &$assertions, $plugin2) {
+                function ($result) use ($me, $plugin2) {
                     $me->assertSame($result->lastPlugin, $plugin2);
-                    ++$assertions;
                 },
                 function () {
                 }
             )
             ->done();
-        $this->assertSame(3, $assertions);
+        $this->assertSame(3, static::getCount());
     }
 
     public function testUsesCustomParsers()
     {
-        $assertions = 0;
         $me = $this;
         $processor = new Processor([]);
         $processor->process(
@@ -362,63 +345,57 @@ test.after( function() {
             ['parser' => [self::class, 'prs']]
         )
             ->then(
-                function ($result) use ($me, &$assertions) {
+                function ($result) use ($me) {
                     $me->assertSame('ok', $result->css);
-                    ++$assertions;
                 },
                 function () {
                 }
             )
             ->done();
-        $this->assertSame(1, $assertions);
+        $this->assertSame(1, static::getCount());
     }
 
     public function testUsesCustomParsersFromObject()
     {
         $me = $this;
-        $assertions = 0;
         $processor = new Processor([]);
         $syntax = ['parse' => [self::class, 'prs'], 'stringify' => [self::class, 'str']];
         $processor->process(
             'a{}', ['parser' => $syntax]
         )
             ->then(
-                function ($result) use ($me, &$assertions) {
+                function ($result) use ($me) {
                     $me->assertSame('ok', $result->css);
-                    ++$assertions;
                 },
                 function () {
                 }
             )
             ->done();
-        $this->assertSame(1, $assertions);
+        $this->assertSame(1, static::getCount());
     }
 
     public function testUsesCustomStringifier()
     {
         $me = $this;
-        $assertions = 0;
         $processor = new Processor([]);
         $processor->process(
             'a{}',
             ['stringifier' => [self::class, 'str']]
         )
             ->then(
-                function ($result) use ($me, &$assertions) {
+                function ($result) use ($me) {
                     $me->assertSame('!', $result->css);
-                    ++$assertions;
                 },
                 function () {
                 }
             )
             ->done();
-        $this->assertSame(1, $assertions);
+        $this->assertSame(1, static::getCount());
     }
 
     public function testUsesCustomStringifierFromObject()
     {
         $me = $this;
-        $assertions = 0;
         $processor = new Processor([]);
         $syntax = ['parse' => [self::class, 'prs'], 'stringify' => [self::class, 'str']];
         $processor->process(
@@ -426,39 +403,35 @@ test.after( function() {
             ['stringifier' => $syntax]
         )
             ->then(
-                function ($result) use ($me, &$assertions) {
+                function ($result) use ($me) {
                     $me->assertSame('!', $result->css);
-                    ++$assertions;
                 },
                 function () {
                 }
             )
             ->done();
-        $this->assertSame(1, $assertions);
+        $this->assertSame(1, static::getCount());
     }
 
     public function testUsesCustomStringifierWithSourceMaps()
     {
         $me = $this;
-        $assertions = 0;
         $processor = new Processor([]);
         $processor->process('a{}', ['map' => true, 'stringifier' => [self::class, 'str']])
             ->then(
-                function ($result) use ($me, &$assertions) {
+                function ($result) use ($me) {
                     $me->assertRegExp('/!\n\/\*# sourceMap/', $result->css);
-                    ++$assertions;
                 },
                 function () {
                 }
             )
             ->done();
-        $this->assertSame(1, $assertions);
+        $this->assertSame(1, static::getCount());
     }
 
     public function testUsesCustomSyntax()
     {
         $me = $this;
-        $assertions = 0;
         $processor = new Processor([]);
         $syntax = ['parse' => [self::class, 'prs'], 'stringify' => [self::class, 'str']];
 
@@ -467,14 +440,13 @@ test.after( function() {
             ['syntax' => $syntax]
         )
             ->then(
-                function ($result) use ($me, &$assertions) {
+                function ($result) use ($me) {
                     $me->assertSame('ok!', $result->css);
-                    ++$assertions;
                 },
                 function () {
                 }
             )
             ->done();
-        $this->assertSame(1, $assertions);
+        $this->assertSame(1, static::getCount());
     }
 }
