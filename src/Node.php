@@ -60,11 +60,9 @@ class Node
      * @example
      * $root = \PostCSS\Parser::parse('  @media\nprint {\n}');
      * $root->first->first->raws //=> ['before' => '  ', 'between' => ' ', 'afterName' = > "\n", 'after' => "\n"]
-     * 
      * @example
      * \PostCSS\Parser::parse('a {}\n').raws //=> ['after' => "\n"]
      * \PostCSS\Parser::parse('a {}').raws   //=> ['after => '']
-     *
      * @example
      * $root = \PostCSS\Parser::parse('a {\n  color:black\n}');
      * $root->first->first->raws //=> ['before' => '', 'between' => ' ', 'after' => "\n"]

@@ -90,6 +90,7 @@ class CssSyntaxError extends Exception
     }
 
     /**
+     * Updates the message.
      */
     public function updateMessage()
     {
