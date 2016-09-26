@@ -4,11 +4,11 @@ namespace PostCSS\Tests;
 
 use PostCSS\AtRule;
 use PostCSS\Declaration;
-use PostCSS\Node;
+use PostCSS\Parser;
 use PostCSS\Root;
 use PostCSS\Rule;
 use PostCSS\Stringifier;
-use PostCSS\Parser;
+use PostCSS\Tests\Helpers\InstantiableNode;
 
 class StringifierTest extends \PHPUnit_Framework_TestCase
 {
@@ -25,11 +25,11 @@ class StringifierTest extends \PHPUnit_Framework_TestCase
 
     public function testCreatesTrimmedRawProperty()
     {
-        $b = new Node(['one' => 'trim']);
+        $b = new InstantiableNode(['one' => 'trim']);
         $b->raws->one = ['value' => 'trim', 'raw' => 'raw'];
         $this->assertSame('raw', $this->str->rawValue($b, 'one'));
 
-        $b = new Node(['one' => 'trim']);
+        $b = new InstantiableNode(['one' => 'trim']);
         $b->raws->one = (object) ['value' => 'trim', 'raw' => 'raw'];
         $this->assertSame('raw', $this->str->rawValue($b, 'one'));
 
@@ -39,7 +39,7 @@ class StringifierTest extends \PHPUnit_Framework_TestCase
 
     public function testWorksWithoutRawValueMagic()
     {
-        $b = new Node();
+        $b = new InstantiableNode();
         $b->one = '1';
         $this->assertSame('1', $b->one);
         $this->assertSame('1', $this->str->rawValue($b, 'one'));

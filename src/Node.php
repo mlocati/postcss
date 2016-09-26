@@ -7,7 +7,7 @@ namespace PostCSS;
  *
  * @link https://github.com/postcss/postcss/blob/master/lib/node.es6
  */
-class Node
+abstract class Node
 {
     /**
      * Possible values are `root`, `atrule`, `rule`, `decl`, or `comment`.
