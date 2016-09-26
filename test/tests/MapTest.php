@@ -283,7 +283,11 @@ class MapTest extends Helpers\DeletableDirectoryTest
             'map' => true,
         ]);
 
-        $this->createAbsoluteFile($file.'.map', $step1->map);
+        try {
+            $this->createAbsoluteFile($file.'.map', $step1->map);
+        } catch (Helpers\FilesystemError $x) {
+            $this->markTestSkipped($x->getMessage());
+        }
         $step2 = static::lighter()->process($step1->css, [
             'from' => $file,
             'to' => 'b.css',
@@ -364,7 +368,11 @@ class MapTest extends Helpers\DeletableDirectoryTest
         $source = static::consumer($step1->map)->originalPositionFor(['line' => 1, 'column' => 0])['source'];
         $this->assertSame('../../source/a.css', $source);
 
-        $file = $this->createRelativeFile('one/maps/b.css.map', $step1->map);
+        try {
+            $file = $this->createRelativeFile('one/maps/b.css.map', $step1->map);
+        } catch (Helpers\FilesystemError $x) {
+            $this->markTestSkipped($x->getMessage());
+        }
         $step2 = static::doubler()->process($step1->css, [
             'from' => $this->getAbsoluteFilePath('one/b.css'),
             'to' => $this->getAbsoluteFilePath('two/c.css'),

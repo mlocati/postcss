@@ -142,7 +142,11 @@ class PreviousMapTest extends Helpers\DeletableDirectoryTest
 
     public function testReadsMapFromAnnotation()
     {
-        $file = $this->createRelativeFile('a.map', static::getMap());
+        try {
+            $file = $this->createRelativeFile('a.map', static::getMap());
+        } catch (Helpers\FilesystemError $x) {
+            $this->markTestSkipped($x->getMessage());
+        }
         $root = Parser::parse("a{}\n/*# sourceMappingURL=a.map */", ['from' => $file]);
 
         $this->assertSame(static::getMap(), $root->source['input']->map->text);
@@ -180,7 +184,11 @@ class PreviousMapTest extends Helpers\DeletableDirectoryTest
     public function testShouldAcceptAFunction()
     {
         $css = "body{}\n/*# sourceMappingURL=a.map */";
-        $file = $this->createRelativeFile('previous-sourcemap-function.map', static::getMap());
+        try {
+            $file = $this->createRelativeFile('previous-sourcemap-function.map', static::getMap());
+        } catch (Helpers\FilesystemError $x) {
+            $this->markTestSkipped($x->getMessage());
+        }
         $opts = [
             'map' => [
                 'prev' => function (/* from */) use ($file) {
@@ -196,7 +204,11 @@ class PreviousMapTest extends Helpers\DeletableDirectoryTest
     public function testShouldCallFunctionWithOptsFrom()
     {
         $css = "body{}\n/*# sourceMappingURL=a.map */";
-        $file = $this->createRelativeFile('previous-sourcemap-function.map', static::getMap());
+        try {
+            $file = $this->createRelativeFile('previous-sourcemap-function.map', static::getMap());
+        } catch (Helpers\FilesystemError $x) {
+            $this->markTestSkipped($x->getMessage());
+        }
         $me = $this;
         $opts = [
             'from' => 'a.css',
