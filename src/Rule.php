@@ -19,7 +19,7 @@ namespace PostCSS;
 class Rule extends Container
 {
     /**
-     * The rule’s full selector represented as a string.
+     * The rule's full selector represented as a string.
      *
      * @var string|null
      */

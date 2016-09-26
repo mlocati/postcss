@@ -17,7 +17,7 @@ class Node
     public $type = null;
 
     /**
-     * The node’s parent node.
+     * The node's parent node.
      *
      * @var Container|null
      */
@@ -43,8 +43,8 @@ class Node
      *   - `afterName`: the space between the at-rule name and its parameters.
      * - Comment:
      *   - `before`: the space symbols before the node.
-     *   - `left`: the space symbols between `/*` and the comment’s text.
-     *   - `right`: the space symbols between the comment’s text.
+     *   - `left`: the space symbols between `/*` and the comment's text.
+     *   - `right`: the space symbols between the comment's text.
      * - Root:
      *   - `after`: the space symbols after the last child to the end of file.
      *   - `semicolon`: is the last child has an (optional) semicolon.
@@ -55,7 +55,7 @@ class Node
      *   - `semicolon`: contains true if the last child has an (optional) semicolon.
      *
      * PostCSS cleans at-rule parameters from comments and extra spaces, but it stores origin content in raws properties.
-     * As such, if you don’t change a declaration’s value, PostCSS will use the raw value with comments.
+     * As such, if you don't change a declaration's value, PostCSS will use the raw value with comments.
      *
      * @example
      * $root = \PostCSS\Parser::parse('  @media\nprint {\n}');

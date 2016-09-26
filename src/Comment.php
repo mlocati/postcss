@@ -12,7 +12,7 @@ namespace PostCSS;
 class Comment extends Node
 {
     /**
-     * The comment’s text.
+     * The comment's text.
      *
      * @var string|null
      */

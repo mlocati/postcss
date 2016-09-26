@@ -62,7 +62,7 @@ class PreviousMap
      *
      * It is lazy method, so it will create object only on first call and then it will use cache.
      *
-     * @return SourceMapConsumer object woth source map information
+     * @return SourceMapConsumer object with source map information
      */
     public function consumer()
     {

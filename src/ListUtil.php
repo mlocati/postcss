@@ -67,7 +67,7 @@ class ListUtil
      *
      * @param string $string Space-separated values
      *
-     * @return string[] Splitted values
+     * @return string[] Split values
      *
      * @example
      *
@@ -85,7 +85,7 @@ class ListUtil
      *
      * @param string $string Comma-separated values
      *
-     * @return string[] Splitted values
+     * @return string[] Split values
      *
      * @example
      * \PostCSS\ListUtil::comma('black, linear-gradient(white, black)') //=> ['black', 'linear-gradient(white, black)']

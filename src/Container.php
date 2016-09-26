@@ -9,8 +9,8 @@ namespace PostCSS;
  *
  * @link https://github.com/postcss/postcss/blob/master/lib/container.es6
  *
- * @property Node|null $first The container’s first child (@example $rule->first == $rules->nodes[0]) )
- * @property Node|null $last The container’s last child (@example $rule->last == $rules->nodes[count($rules->nodes) - 1] )
+ * @property Node|null $first The container's first child (@example $rule->first == $rules->nodes[0]) )
+ * @property Node|null $last The container's last child (@example $rule->last == $rules->nodes[count($rules->nodes) - 1] )
  */
 abstract class Container extends Node
 {

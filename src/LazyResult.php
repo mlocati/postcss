@@ -164,7 +164,7 @@ class LazyResult
      * It implements standard Promise API.
      *
      * @param callable $onFulfilled Callback will be executed when all plugins will finish work
-     * @param callable $onRejected Callback will be execited on any error
+     * @param callable $onRejected Callback will be executed on any error
      *
      * @return Promise Promise API to make queue
      *
@@ -180,7 +180,7 @@ class LazyResult
      * Processes input CSS through synchronous and asynchronous plugins and calls onRejected for each error thrown in any plugin.
      * It implements standard Promise API.
      *
-     * @param callable $onRejected Callback will be execited on any error
+     * @param callable $onRejected Callback will be executed on any error
      *
      * @return Promise Promise API to make queue
      *

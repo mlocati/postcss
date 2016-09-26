@@ -5,8 +5,7 @@ namespace PostCSS;
 /**
  * Represents an at-rule.
  *
- * If it’s followed in the CSS by a {} block, this node will have
- * a nodes property representing its children.
+ * If it's followed in the CSS by a {} block, this node will have a nodes property representing its children.
  *
  * @example
  * $root = \PostCSS\Parser::parse('@charset "UTF-8"; @media print {}');
@@ -21,7 +20,7 @@ namespace PostCSS;
 class AtRule extends Container
 {
     /**
-     * The at-rule’s name immediately follows the `@`.
+     * The at-rule's name immediately follows the `@`.
      *
      * @example
      * $root  = \PostCSS\Parser::parse('@media print {}');
@@ -33,7 +32,7 @@ class AtRule extends Container
     public $name = null;
 
     /**
-     * The at-rule’s parameters, the values that follow the at-rule’s name but precede any {} block.
+     * The at-rule's parameters, the values that follow the at-rule's name but precede any {} block.
      *
      * @example
      * $root  = \PostCSS\Parser::parse('@media print, screen {}');
