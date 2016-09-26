@@ -287,7 +287,7 @@ class MapGenerator
      */
     public function relative($file)
     {
-        if (preg_match('/^\w+:\/\//', $file) || strpos($file, '<input css ') === 0) {
+        if ($file && ($file[0] === '<' || preg_match('/^\w+:\/\//', $file))) {
             return $file;
         }
 
