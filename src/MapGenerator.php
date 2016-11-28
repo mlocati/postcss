@@ -297,6 +297,9 @@ class MapGenerator
             $from = Path::dirname(Path::resolve($from, $this->mapOpts['annotation']));
         }
 
+        if ($from === '.' && isset($file[0]) && $file[0] === '<') {
+            return $file;
+        }
         $file = Path::relative($from, $file);
         if (DIRECTORY_SEPARATOR === '\\') {
             return str_replace('\\', '/', $file);
